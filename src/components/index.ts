@@ -1,5 +1,5 @@
-import Header from 'components/header/Header'
-import Loader from 'components/loader/Loader'
-import LogInForm from './loginForm/LogInForm'
+import Header from './header/Header'
+import Loader from './loader/Loader'
+//import LogInForm from './loginForm/LogInForm'
 
-export { Header, Loader, LogInForm }
+export { Header, Loader, /* LogInForm */ }
