@@ -1,4 +1,4 @@
-import { Loader } from "components";
+import { Loader } from "../components";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type LoadingContextType = {

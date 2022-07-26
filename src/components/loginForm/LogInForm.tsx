@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+
+/*
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
@@ -92,4 +94,4 @@ const LogInForm: React.FC<Props> = ({ router }) => {
 }
 
 
-export default LogInForm;
+export default LogInForm; */
