@@ -1,0 +1,32 @@
+.form {
+  margin: auto;
+
+  min-width: 5rem;
+  width: 100%;
+  max-width: 30rem;
+
+  text-align: center;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem 0;
+  height: 4rem;
+}
+
+.formGroup label {
+  font-weight: bold;
+  margin: 0.25rem 0;
+}
+
+
+.inpErr {
+  border-color: red;
+  background: hsla(0, 100%, 50%, 0.1);
+}
+
+.formGroup span {
+  color: red;
+  font-size: 0.8rem;
+}

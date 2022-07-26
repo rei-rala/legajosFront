@@ -1,0 +1,27 @@
+.header {
+  background-color: var(--color-primary);
+  color: white;
+  height: 3rem;
+  padding: 0.5rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header * {
+  margin: 0;
+  padding: 0;
+}
+
+.header > div {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header img {
+  max-height: 2rem !important;
+  max-width: 2rem !important;
+  filter: brightness(0) invert(100%) !important;
+}
