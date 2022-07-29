@@ -20,3 +20,11 @@ interface ICuadroAnalistaProps {
   isShowing?: boolean;
   handleHide: (e: React.ChangeEvent<HTMLInputElement>, nombreAnalista: string) => void;
 }
+
+interface IWorkflowTable {
+  headers?: string[],
+  tableBody: {
+    [codigoSol: string]: Expediente;
+    [codigoSol: number]: Expediente;
+  },
+}
