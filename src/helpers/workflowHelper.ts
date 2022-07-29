@@ -45,7 +45,7 @@ export function parseWfObjectByName(title: string, value: any): DatoExpediente {
 
   if (titleLower.includes('fecha') || currentWfColumnDate.includes(titleLower)) {
     // parse to date
-    return moment(value, "DD/MM/YYYY").toDate()
+    return moment(value, "DD/MM/YYYY").format("DD/MM/YYYY")
   }
 
   return value;

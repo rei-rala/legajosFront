@@ -103,6 +103,9 @@ function getLineaExpediente(expediente: Expediente) {
   if (found.includes("virtual")) {
     return "virtual"
   }
+  if (found.includes("productivas")) {
+    return "GP"
+  }
 
   return "n/a"
 }

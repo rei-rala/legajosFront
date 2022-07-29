@@ -1,0 +1,18 @@
+.tableContainer {
+  overflow: scroll;
+  max-height: 75vh;
+}
+
+.tableContainer :is(th, td) {
+  min-width: 5rem;
+}
+
+.tableContainer table {
+  position: relative;
+  overflow-y: scroll;
+}
+
+.tableContainer thead {
+  position: sticky;
+  top: 0;
+}

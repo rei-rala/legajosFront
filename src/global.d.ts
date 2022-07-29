@@ -1,4 +1,4 @@
-type DatoExpediente = string | number | Date | null;
+type DatoExpediente = string | number | null;
 
 type Expediente = {
   [columna: string | number]: DatoExpediente;

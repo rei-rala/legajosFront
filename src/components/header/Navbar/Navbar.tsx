@@ -19,6 +19,13 @@ const Navbar: React.FC = () => {
             Resumen
           </NavLink>
         </li>
+
+        <li>
+          <NavLink to="/workflow/tablas" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
+            Tablas
+          </NavLink>
+        </li>
+
       </ul>
     </nav>
   );
