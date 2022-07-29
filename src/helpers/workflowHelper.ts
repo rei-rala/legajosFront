@@ -83,23 +83,29 @@ export async function parseWorkflow(workflow: string) {
   let columnTitles = arrAux[0] ?? undefined;
   let codSolIndex = getColumnSolicitudExpediente(columnTitles)
   let codExpIndex = getColumnCodigoExpediente(columnTitles);
-  
+
   for (let row of arrAux) {
     const codigoSolicitud = +row[codSolIndex]
     if (!codigoSolicitud) {
       continue;
     }
-    
+
     const codigoExpediente = +row[codExpIndex]
     if (!codigoExpediente) {
       continue;
     }
-    
+
     let sucursal = row[columnTitles.indexOf("Sucursal Garantizar")]
     if (sucursal.toLowerCase() === "digital") {
       continue;
     }
-    
+
+
+    let gtiaSucursal = row[columnTitles.indexOf("Canal Solicitud")]
+    if (gtiaSucursal.toLowerCase() === "garantía sucursal") {
+      continue
+    }
+
     const rowObject: any = {}
 
     row.forEach((value, index) => {
