@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import TablaGenerica from "./generica/TablaGenerica";
 
-
 const Completo: React.FC<IWorkflowTable> = ({ tableBody, headers }) => {
-
 
   useEffect(() => {
     document.title = "Workflow | Tabla completa [Resumen]";

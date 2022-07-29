@@ -1,11 +1,7 @@
-import React, { useEffect, useMemo } from "react";
-import TablaGenerica from "./generica/TablaGenerica";
-
+import React, { useEffect } from "react";
 
 
 const Resumen: React.FC = () => {
-
-
 
   useEffect(() => {
     document.title = "Workflow | Resumen";

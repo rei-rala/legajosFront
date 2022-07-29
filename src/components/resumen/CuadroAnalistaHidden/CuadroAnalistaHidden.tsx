@@ -2,7 +2,6 @@ import React from "react";
 import styles from "./CuadroAnalistaHidden.module.css";
 
 
-
 const CuadroAnalistaHidden: React.FC<ICuadroAnalistaProps> = ({ analista, solicitudes, handleHide }) => {
 
   return (

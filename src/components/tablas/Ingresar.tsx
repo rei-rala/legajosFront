@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import TablaGenerica from "./generica/TablaGenerica";
 import columnasWf from "../../config";
 

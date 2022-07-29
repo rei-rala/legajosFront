@@ -8,7 +8,6 @@ const { canal, codigoSol, codigoExp, estadoExp, razonSocial, asesorComercial, su
 // las columnas tendran el orden que se asignen en este array
 let validColumns = ["Días GR", fechaIngreso, codigoSol, /* codigoExp, */ estadoExp, razonSocial, canal, asesorComercial, sucursal, analista]
 
-
 const Asignar: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
   useEffect(() => {

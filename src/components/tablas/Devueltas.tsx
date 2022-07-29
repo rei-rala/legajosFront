@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import TablaGenerica from "./generica/TablaGenerica";
 import columnasWf from "../../config";
-import moment from "moment"
 
 const tableName = "analisis"
 // TODO: Hacer esto como la gente
