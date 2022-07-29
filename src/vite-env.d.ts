@@ -1,11 +1,12 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_WF_DATE_COLUMNS: string[]
-  readonly VITE_WF_FLOAT_COLUMNS: string[]
-  readonly VITE_WF_CODIGO_EXPEDIENTE_COLUMN: string
-  readonly VITE_WF_CODIGO_SOLICITUD_COLUMN: string
-
+  readonly VITE_WF_DATE_COLUMNS: string
+  readonly VITE_WF_FLOAT_COLUMNS: string
+  readonly VITE_WF_COD_EXPE_COLS: string
+  readonly VITE_WF_COD_SOLI_COLS: string
+  readonly VITE_WF_EST_EXPE_COLS: string
+  readonly VITE_WF_CANAL_COLS: string
   // more env variables...
 }
 

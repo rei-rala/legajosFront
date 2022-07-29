@@ -14,13 +14,19 @@ type LoadingContextType = {
    * Removes a reason from the list of reasons to be loading.
    */
   popLoading: (reason: string) => void;
+  preferences: {
+    sectionMaxWidth: boolean;
+  }
 }
 
 export const User = createContext<LoadingContextType>({
   isLoading: false,
   currentlyLoading: [],
   pushLoading: () => { },
-  popLoading: () => { }
+  popLoading: () => { },
+  preferences: {
+    sectionMaxWidth: true
+  }
 })
 
 type Props = { children: React.ReactNode }
@@ -28,6 +34,10 @@ type Props = { children: React.ReactNode }
 export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
   const [currentlyLoading, setCurrentlyLoading] = useState<string[]>([]);
   const [isLoading, setIsloading] = useState<boolean>(false);
+
+  const [preferences, setPreferences] = useState({
+    sectionMaxWidth: true,
+  })
 
   /**
    * Adds a reason to the list of reasons to be loading.
@@ -54,11 +64,19 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
     setIsloading(currentlyLoading.length > 0);
   }, [currentlyLoading])
 
+
+  useEffect(() => {
+    preferences.sectionMaxWidth
+      ? document.body.classList.add("ignoreSectionMaxWidth")
+      : document.body.classList.remove("ignoreSectionMaxWidth")
+  }, [preferences.sectionMaxWidth])
+
   return (
     <User.Provider value={{
       isLoading,
       currentlyLoading,
-      pushLoading, popLoading
+      pushLoading, popLoading,
+      preferences
     }}>
       {children}
     </User.Provider>

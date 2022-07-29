@@ -1,27 +1,31 @@
 .header {
   background-color: var(--color-primary);
   color: white;
+
   height: 3rem;
   padding: 0.5rem;
+  overflow: hidden;
+}
 
+.headerWrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  margin: auto;
+
+  width: 100%;
+  max-width: var(--sectionMaxWidth);
 }
 
-.header * {
-  margin: 0;
-  padding: 0;
-}
-
-.header > div {
+.header .headerWrapper div {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 
 .header img {
-  max-height: 2rem !important;
-  max-width: 2rem !important;
-  filter: brightness(0) invert(100%) !important;
+  max-height: 2rem;
+  max-width: 2rem;
+  filter: brightness(0) invert(100%);
 }

@@ -1,16 +1,18 @@
 import React from "react";
-import Navbar from "./navbar/Navbar";
+import Navbar from "./Navbar/Navbar";
 
-import "./header.module.css";
+import styles from "./Header.module.css";
 
 const Header: React.FC = () => {
   return (
-    <header>
-      <div>
-        <img src="/isotipo.png" alt='logo' />
-        <span>Riesgos GTZ <button onClick={() => window.localStorage.clear()}>clear</button></span>
+    <header className={styles.header}>
+      <div className={styles.headerWrapper} >
+        <div>
+          <img src="/isotipo.png" alt='logo' />
+          <span>Riesgos GTZ</span>
+        </div>
+        <Navbar />
       </div>
-      <Navbar />
     </header>
   );
 }

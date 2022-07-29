@@ -1,5 +1,13 @@
 :root {
-  --color-primary: hsl(203, 89%, 40%);
+  --color-primary: hsl(198, 100%, 43%);
+  --color-primary-light: hsl(198, 77%, 92%);
+  --color-primary-dark: hsl(198, 100%, 39%);
+
+  --sectionMaxWidth: 1200px;
+}
+
+:root .ignoreSectionMaxWidth {
+  --sectionMaxWidth: 100%;
 }
 
 html,
@@ -8,15 +16,21 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  
+}
+
+body,
+:is(h1, h2, h3, h4, h5) {
+  margin: 0;
+  padding: 0;
 }
 
 body {
   overflow: hidden scroll;
+  max-width: 100%;
 }
 
 a {
-  color: inherit;
+  color: var(--color-primary-dark);
   text-decoration: none;
 }
 
@@ -25,11 +39,50 @@ a:active {
   text-decoration: underline;
 }
 
+button,
+input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+}
+
 * {
   box-sizing: border-box;
 }
 
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+}
 
+table thead {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: var(--color-primary-light);
+}
+
+table :is(th, td) {
+  padding: 0 0.5rem;
+}
+
+table :is(th, td):not(:last-child) {
+  border-right: 1px solid hsla(0, 0%, 0%, 0.15);
+}
+
+section {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  margin: auto;
+  width: 100%;
+  max-width: var(--sectionMaxWidth);
+}
 
 /* @media (prefers-color-scheme: dark) {
   html {

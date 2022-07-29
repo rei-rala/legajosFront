@@ -1,0 +1,22 @@
+.navList {
+  list-style-type: none;
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 1rem;
+  min-width: 5rem;
+
+  padding: 0;
+  margin: 0;
+}
+
+.navLink {
+  display: grid;
+  place-items: center;
+  
+  color: white;
+}
+
+.active {
+  display: inline-block;
+  text-decoration: underline;
+}
