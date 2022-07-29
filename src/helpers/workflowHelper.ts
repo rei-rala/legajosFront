@@ -22,7 +22,7 @@ export function getColumnNameCanal() {
 }
 
 
-export function parseWfObjectByName(title: string, value: any): WorkflowData {
+export function parseWfObjectByName(title: string, value: any): DatoExpediente {
   let currentWfColumnDate = import.meta.env.VITE_WF_DATE_COLUMNS.toLowerCase().split("|") || []
   let currentWfColumnFloat = import.meta.env.VITE_WF_FLOAT_COLUMNS.toLowerCase().split("|") || []
 
@@ -52,7 +52,7 @@ export function parseWfObjectByName(title: string, value: any): WorkflowData {
 }
 
 
-export function parseWorkflowData(workflowObject: WorkflowObject) {
+export function parseWorkflowData(workflowObject:Workflow ) {
   let { title, value } = workflowObject;
   return parseWfObjectByName("" + title, value)
 
