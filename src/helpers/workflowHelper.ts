@@ -52,7 +52,7 @@ export function parseWfObjectByName(title: string, value: any): DatoExpediente {
 }
 
 
-export function parseWorkflowData(workflowObject:Workflow ) {
+export function parseWorkflowData(workflowObject: Workflow) {
   let { title, value } = workflowObject;
   return parseWfObjectByName("" + title, value)
 
@@ -83,18 +83,23 @@ export async function parseWorkflow(workflow: string) {
   let columnTitles = arrAux[0] ?? undefined;
   let codSolIndex = getColumnSolicitudExpediente(columnTitles)
   let codExpIndex = getColumnCodigoExpediente(columnTitles);
-
+  
   for (let row of arrAux) {
     const codigoSolicitud = +row[codSolIndex]
     if (!codigoSolicitud) {
       continue;
     }
-
+    
     const codigoExpediente = +row[codExpIndex]
     if (!codigoExpediente) {
       continue;
     }
-
+    
+    let sucursal = row[columnTitles.indexOf("Sucursal Garantizar")]
+    if (sucursal.toLowerCase() === "digital") {
+      continue;
+    }
+    
     const rowObject: any = {}
 
     row.forEach((value, index) => {
