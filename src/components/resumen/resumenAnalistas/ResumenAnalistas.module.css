@@ -1,0 +1,15 @@
+.analistasContainer, .analistasContainer_hide {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+:is(.analistasContainer, .analistasContainer_hide) h3 {
+  background-color: var(--color-primary);
+}
+
+
+.analistasContainer_hide > div {
+  opacity: 0.5;
+}

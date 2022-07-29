@@ -1,15 +1,22 @@
-type WorkflowData = string | number | Date | null;
+type DatoExpediente = string | number | Date | null;
 
-type WorkflowObject = {
-  [columna: string]: WorkflowData;
+type Expediente = {
+  [columna: string | number]: DatoExpediente;
 }
 
 type Workflow = {
-  [codigoSolicitud: string | number]: WorkflowObject[]
+  [codigoSolicitud: string | number]: Expediente[]
 }
 
 type PreviewWorkflow = {
   encabezados: string[],
   qSolicitudes: number,
   valuesExpExample: string[],
+}
+
+interface ICuadroAnalistaProps {
+  analista: string;
+  solicitudes: { [codSolicitud: string | number]: any }
+  isShowing?: boolean;
+  handleHide: (e: React.ChangeEvent<HTMLInputElement>, nombreAnalista: string) => void;
 }

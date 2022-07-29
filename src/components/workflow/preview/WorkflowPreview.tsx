@@ -19,7 +19,7 @@ const WorkflowPreview: React.FC = () => {
   }
 
   return <form>
-    <div>
+    <div className={styles.tableSection}>
       <h3> Se detectaron los siguientes datos:</h3>
       <ul>
         <li>Cantidad de solicitudes: {qSolicitudes}</li>
@@ -62,8 +62,8 @@ const WorkflowPreview: React.FC = () => {
 
     </div>
 
-    La informacion es correcta?
-    <button onClick={saveAndRedirect} >Guardar workflow y continuar</button>
+    <p>La informacion es correcta? <button onClick={saveAndRedirect} >Guardar workflow y continuar</button></p>
+
   </form>
 }
 export default WorkflowPreview

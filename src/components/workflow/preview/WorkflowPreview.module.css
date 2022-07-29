@@ -1,3 +1,9 @@
+.tableSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .tableContainer {
   overflow: scroll hidden;
 }

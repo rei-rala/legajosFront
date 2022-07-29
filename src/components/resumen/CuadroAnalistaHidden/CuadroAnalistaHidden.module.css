@@ -1,0 +1,55 @@
+.analistaBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 100%;
+  max-width: 200px;
+  margin: 5px;
+
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  box-shadow: 5px 5px 1px rgb(0, 0, 0, 0.25);
+}
+
+.analistaBox > *:not(ol) {
+  padding: 0.25rem;
+}
+
+.analistaBox_title {
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.analistaBox_content {
+  display: flex;
+  flex-direction: column;
+
+  font-size: 0.8em;
+  overflow: hidden;
+}
+
+.analistaBox_content li {
+  margin: 0 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analistaBox_footer {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  bottom: 0;
+  background-color: red;
+}
+
+.analistaBox_footer label {
+  cursor: pointer;
+}
+
+.analistaBox_footer label input {
+  display: none;
+}
