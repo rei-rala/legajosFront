@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { removeParsedWfFromLocalStorage, retrieveParsedWorkflow } from "../helpers";
-import { getWorkflowHeaders } from "../helpers/workflowHelper";
+import { removeParsedWfFromLocalStorage, retrieveParsedWorkflow, getWorkflowHeaders } from "../helpers";
 
 type WorkflowContextType = {
   parsedWorkflow: Workflow | null,

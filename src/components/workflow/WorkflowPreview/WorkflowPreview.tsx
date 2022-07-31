@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useWorkflow } from "../../../context/Workflow";
-import { parseWfObjectByName } from "../../../helpers/workflowHelper";
+import { parseWfObjectByName } from "../../../helpers";
 import styles from "./WorkflowPreview.module.css";
 
 const WorkflowPreview: React.FC = () => {

@@ -3,7 +3,7 @@ import { Navigate, NavLink, Link, useParams } from "react-router-dom";
 import { Asignar, Devueltas, EnAnalisis, Ingresar, Pendientes, Supervision, Resumen, Completo } from "../components/tablas";
 import columnasWf from "../config";
 import { useWorkflow } from "../context";
-import { getWorkflowHeaders } from "../helpers/workflowHelper";
+import { getWorkflowHeaders } from "../helpers";
 import moment, { Moment } from "../libs/moment";
 //import OpcionesTabla from "../components/OpcionesTabla/OpcionesTabla";
 
@@ -391,10 +391,10 @@ const WfTablas: React.FC = () => {
   }, [workflow, seccion])
 
   return <section>
-    <h1>Tabla resumen</h1>
-    <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
     {workflow ? (
       <div>
+        <h1>Tabla resumen</h1>
+        <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
         <div>
           {/* TODO: rutas dinamicas? */}
           <NavLink to="/workflow/tablas" end className={({ isActive }) => isActive ? "navActive" : ""}>Completo</NavLink>
@@ -418,10 +418,10 @@ const WfTablas: React.FC = () => {
         {seccionComponent ?? <Navigate to="/workflow/tablas" />}
       </div>
     ) : (
-      <div>
+      <>
         <h1>No hay workflow para mostrar</h1>
         <Link to="/workflow">Cargar un Workflow</Link>
-      </div>
+      </>
     )}
 
     {/* <OpcionesTabla dayHtml={dayFiltered.format("YYYY-MM-DD")} setDayHtml={setDayHtml} /> */}

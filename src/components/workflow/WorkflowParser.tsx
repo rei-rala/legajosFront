@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import WorkflowPreview from "./WorkflowPreview/WorkflowPreview";
 import WorkflowInput from "./WorkflowInput/WorkflowInput";
-import { parseWorkflow } from "../../helpers/workflowHelper";
+import { parseWorkflow } from "../../helpers";
 import { useWorkflow, useLoading } from "../../context";
 
 import styles from './WorkflowParser.module.css';

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useWorkflow } from "../../../context";
 import CuadroAnalista from "../cuadroAnalista/CuadroAnalista";
 import CuadroAnalistaHidden from "../CuadroAnalistaHidden/CuadroAnalistaHidden";
@@ -65,6 +66,7 @@ const ResumenAnalistas: React.FC = () => {
 
   return <section>
     <div>
+      <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
       <h2>Cuadro de Analistas</h2><br />
       <div className={styles.analistasContainer}>
         {

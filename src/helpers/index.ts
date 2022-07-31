@@ -1,3 +1,14 @@
+import {
+  getColumnSolicitudExpediente,
+  getColumnCodigoExpediente,
+  getColumnNameEstadoExpediente,
+  getColumnNameCanal,
+  parseWfObjectByName,
+  parseWorkflowData,
+  parseWorkflow,
+  getWorkflowHeaders
+} from "./workflowHelper"
+
 export function saveWorkflow(workflow: Workflow | null) {
   try {
     let wf = JSON.parse(JSON.stringify(workflow))
@@ -27,4 +38,15 @@ export function removeParsedWfFromLocalStorage() {
   } catch (err) {
     console.warn("Workflow not removed")
   }
+}
+
+export {
+  getColumnSolicitudExpediente,
+  getColumnCodigoExpediente,
+  getColumnNameEstadoExpediente,
+  getColumnNameCanal,
+  parseWfObjectByName,
+  parseWorkflowData,
+  parseWorkflow,
+  getWorkflowHeaders
 }

@@ -22,7 +22,6 @@ const WfResumen: React.FC = () => {
 
   return <section>
     <h1>Resumen de Workflow</h1>
-    <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
     <CuadroAnalistas />
   </section>;
 }
