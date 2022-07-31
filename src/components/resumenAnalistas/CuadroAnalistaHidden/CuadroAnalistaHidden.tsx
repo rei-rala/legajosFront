@@ -11,7 +11,7 @@ const CuadroAnalistaHidden: React.FC<ICuadroAnalistaProps> = ({ analista, solici
       <div className={styles.analistaBox_footer} >
         <div>
           <label>
-            <input type="checkbox" onChange={(e) => handleHide(e, analista)} />
+            <input type="checkbox" onChange={(e) => handleHide(e, analista)} checked={true} />
             Mostrar
           </label>
         </div>

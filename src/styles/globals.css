@@ -66,14 +66,15 @@ table {
 
 table thead tr {
   position: relative;
-  background-color: var(--color-primary);
-  color: white;
 }
 
 table thead th {
   position: sticky;
   top: 0;
   z-index: 1;
+
+  background-color: var(--color-primary);
+  color: white;
 }
 
 table tbody tr:nth-child(even) {
