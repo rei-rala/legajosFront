@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import TablaGenerica from "./generica/TablaGenerica";
+import TablaGenerica from "./TablaGenerica/TablaGenerica";
 
 const Completo: React.FC<IWorkflowTable> = ({ tableBody, headers }) => {
 
@@ -13,7 +13,7 @@ const Completo: React.FC<IWorkflowTable> = ({ tableBody, headers }) => {
 
   return (
     <div>
-      <h3 style={{ marginTop: '1rem', marginBottom: "0.5rem" }}>Mostrando tabla completa</h3>
+      <h3>Mostrando tabla completa</h3>
       <TablaGenerica headers={headers} tableBody={tableBody} tableName={"completo"} />
     </div>
   )

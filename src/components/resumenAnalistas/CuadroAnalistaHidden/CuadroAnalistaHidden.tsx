@@ -6,7 +6,7 @@ const CuadroAnalistaHidden: React.FC<ICuadroAnalistaProps> = ({ analista, solici
 
   return (
     <div key={analista} className={styles.analistaBox}>
-      <h3 className={styles.analistaBox_title}>{analista}</h3>
+      <h3 className={styles.analistaBox_title}>{analista ?? "SIN ANALISTA"}</h3>
       <p>Cantidad de legajos: {Object.keys(solicitudes).length}</p>
       <div className={styles.analistaBox_footer} >
         <div>

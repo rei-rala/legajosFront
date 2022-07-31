@@ -1,3 +1,11 @@
+.boxNoAsignado {
+  border: 2px inset red;
+}
+
+.boxNoAsignado .analistaBox_title {
+  background: gray;
+}
+
 .analistaBox {
   display: flex;
   flex-direction: column;
@@ -28,6 +36,8 @@
   justify-content: start;
   align-items: center;
   height: 100%;
+  max-height: 12rem;
+  overflow: hidden auto;
   text-align: justify;
 }
 
@@ -47,10 +57,11 @@
   overflow: hidden;
 }
 
-.analistaBox_content button {
+.analistaBox_content strong {
   font-family: "Courier New", Courier, monospace;
   background-color: transparent;
   min-width: 2rem;
+  text-align: center;
   border: none;
 }
 
@@ -110,4 +121,20 @@
 
 .analistaBox_footer label input {
   display: none;
+}
+
+.isFaltaInfo, .isFinalizado, .isDevuelto {
+  font-weight: bold;
+}
+
+.isFaltaInfo {
+  color: orange;
+}
+
+.isFinalizado {
+  color: green;
+}
+
+.isDevuelto {
+  color: red;
 }

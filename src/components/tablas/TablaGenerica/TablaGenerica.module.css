@@ -1,0 +1,22 @@
+.tableContainer {
+  overflow: auto;
+  max-height: 75vh;
+}
+
+.tableContainer table {
+  margin: auto;
+  border: 1px solid hsl(0, 100%, 50%, 0.25);
+  border-top: none;
+}
+
+.normal {
+  min-width: 4rem;
+}
+
+.minSized {
+  min-width: 12rem;
+}
+
+.maxSized {
+  min-width: 20rem;
+}

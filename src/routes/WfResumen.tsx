@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import CuadroAnalistas from "../components/resumenAnalistas/resumenAnalistas/ResumenAnalistas";
+import CuadroAnalistas from "../components/resumenAnalistas/ResumenAnalistas/ResumenAnalistas";
 import { useWorkflow } from "../context";
 
 const WfResumen: React.FC = () => {

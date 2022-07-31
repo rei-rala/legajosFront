@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import columnasWf from "../../config";
-import TablaGenerica from "./generica/TablaGenerica";
+import columnasWf from "../../../config";
+import TablaGenerica from "../TablaGenerica/TablaGenerica";
 
-import moment, { Moment } from "../../libs/moment";
+import moment, { Moment } from "../../../libs/moment";
 
 import styles from "./Resumen.module.css";
 
@@ -43,6 +43,8 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
     return [solicitudesDia, solicitudesDia.length]
   }, [fullTBody])
 
+  const qSolicitudes =  Object.values(counters).reduce((acc, v) => acc + v, 0)
+
   const [tablaInvertida, setTablaInvertida] = useState(false)
 
   useEffect(() => {
@@ -51,25 +53,23 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
 
 
   return (
+    <div className={styles.resumen}>
+      <h3>Mostrando Resumen <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button></h3>
+      <div className={styles.miniTabla}>
 
-    <div>
-      <h3 style={{ marginTop: '1rem', marginBottom: "0.5rem" }}>Mostrando Resumen</h3>
-      <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button>
-      <div>
-        <h4>Conteo</h4>
 
-        <table className={styles.tableResume}>
+        <table>
           {
             tablaInvertida
               ? (<>
                 <thead>
                   <tr>
-                    <td scope="row">Ingresar</td>
-                    <td scope="row">Asignar</td>
-                    <td scope="row">Análisis</td>
-                    <td scope="row">Pendientes</td>
-                    <td scope="row">Supervisión</td>
-                    <td scope="row">Devueltas</td>
+                    <th scope="row">Ingresar</th>
+                    <th scope="row">Asignar</th>
+                    <th scope="row">Análisis</th>
+                    <th scope="row">Pendientes</th>
+                    <th scope="row">Supervisión</th>
+                    <th scope="row">Devueltas</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -86,8 +86,8 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
               : (<>
                 <thead>
                   <tr>
-                    <td scope="col">Estado</td>
-                    <td scope="col">Cantidad</td>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cantidad</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -123,6 +123,7 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
 
 
         <div>
+          <p>Contamos con {qSolicitudes} legajo{qSolicitudes > 1 && "s"} en riesgos </p>
           <p>El {dayFiltered.locale('es').format("dddd DD [de] MMMM")} {cantidadLegajosIngresados === 0 ? "no ingresaron" : "ingresaron " + cantidadLegajosIngresados} legajos</p>
         </div>
 

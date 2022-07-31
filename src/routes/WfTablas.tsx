@@ -396,7 +396,7 @@ const WfTablas: React.FC = () => {
     {workflow ? (
       <div>
         <div>
-          {/* TODO: rutas dinamicas */}
+          {/* TODO: rutas dinamicas? */}
           <NavLink to="/workflow/tablas" end className={({ isActive }) => isActive ? "navActive" : ""}>Completo</NavLink>
           <b> | </b>
           <NavLink to="/workflow/tablas/ingresar" end className={({ isActive }) => isActive ? "navActive" : ""}>Ingresar</NavLink>
@@ -410,10 +410,11 @@ const WfTablas: React.FC = () => {
           <NavLink to="/workflow/tablas/analisis" end className={({ isActive }) => isActive ? "navActive" : ""}>En análisis</NavLink>
           <b> | </b>
           <NavLink to="/workflow/tablas/supervision" end className={({ isActive }) => isActive ? "navActive" : ""}>En supervisión</NavLink>
-          <br /><br />
-          <NavLink to="/workflow/tablas/resumen" end className={({ isActive }) => isActive ? "navActive" : ""}><button>RESUMEN</button></NavLink>
+          <b> | </b>
+          <NavLink to="/workflow/tablas/resumen" end className={({ isActive }) => isActive ? "navActive" : ""}>Resumen</NavLink>
         </div>
-
+        <br />
+        <hr />
         {seccionComponent ?? <Navigate to="/workflow/tablas" />}
       </div>
     ) : (

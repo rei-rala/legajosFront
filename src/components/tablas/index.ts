@@ -5,7 +5,7 @@ import EnAnalisis from "./EnAnalisis";
 import Ingresar from "./Ingresar";
 import Pendientes from "./Pendientes";
 import Supervision from "./Supervision";
-import Resumen from "./Resumen";
+import Resumen from "./Resumen/Resumen";
 
 export {
     Asignar,

@@ -32,7 +32,7 @@ const ResumenAnalistas: React.FC = () => {
 
     // Por que habia hecho la estructura de datos asi?
     parsedWorkflow && Object.values(parsedWorkflow).forEach((solicitud) => {
-      const nombre = solicitud[0]["Analista Riesgo"] as string || "SIN ANALISTA"
+      const nombre = solicitud[0]["Analista Riesgo"] as string
       const existe = analistas.find(a => a.nombre === nombre);
 
       if (existe) {
@@ -40,7 +40,7 @@ const ResumenAnalistas: React.FC = () => {
       } else {
         analistas.push({
           nombre,
-          isHiding: nombre === "SIN ANALISTA" ? true : isHiding(nombre),
+          isHiding: isHiding(nombre),
           solicitudes: [solicitud]
         })
       }
@@ -65,7 +65,7 @@ const ResumenAnalistas: React.FC = () => {
 
   return <section>
     <div>
-      <h1>Cuadro de Analistas</h1>
+      <h2>Cuadro de Analistas</h2><br />
       <div className={styles.analistasContainer}>
         {
           showingAnalistas.map(analista => <CuadroAnalista key={analista.nombre} analista={analista.nombre} solicitudes={analista.solicitudes} handleHide={handleHide} />)

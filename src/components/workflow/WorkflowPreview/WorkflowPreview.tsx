@@ -32,30 +32,31 @@ const WorkflowPreview: React.FC = () => {
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead><tr>{encabezados.map((e) => <th key={e}>{e}</th>)}</tr></thead>
-          <tbody><tr>{
-            valuesExpExample.map((e, i) => <td
-              key={`exampleC${i}`}
-            >
-              {parseWfObjectByName(encabezados[i], e)?.toString() ?? ""}
-            </td>
-            )}</tr>
+          <tbody>
+            <tr>
+              {
+                valuesExpExample.map((e, i) => <td key={`exampleC${i}`}>
+                  {parseWfObjectByName(encabezados[i], e)?.toString() ?? ""}
+                </td>)
+              }
+            </tr>
+            <tr>
+              {
+                valuesExpExample.map((e, i) => <td key={`exampleC${i}`}>
+                  {parseWfObjectByName(encabezados[i], e)?.toString() ?? ""}
+                </td>
+                )
+              }
+            </tr>
 
-            <tr>{
-              valuesExpExample.map((e, i) => <td
-                key={`exampleC${i}`}
-              >
-                {parseWfObjectByName(encabezados[i], e)?.toString() ?? ""}
-              </td>
-              )}</tr>
-
-            <tr>{
-              valuesExpExample.map((e, i) => <td
-                key={`exampleC${i}`}
-              >
-                {parseWfObjectByName(encabezados[i], e)?.toString() ?? ""}
-              </td>
-              )}</tr>
-
+            <tr>
+              {
+                valuesExpExample.map((e, i) => <td key={`exampleC${i}`}>
+                  {parseWfObjectByName(encabezados[i], e)?.toString() ?? ""}
+                </td>)
+              }
+            </tr>
+            
           </tbody>
         </table>
       </div>
