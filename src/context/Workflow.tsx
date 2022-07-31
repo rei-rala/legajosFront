@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { removeParsedWfFromLocalStorage, retrieveParsedWorkflow } from "../helpers";
-import { obtenerEncabezadosWorkflow } from "../helpers/workflowHelper";
+import { getWorkflowHeaders } from "../helpers/workflowHelper";
 
 type WorkflowContextType = {
   parsedWorkflow: Workflow | null,
@@ -37,7 +37,7 @@ export const WorkflowContext: (props: Props) => JSX.Element = ({ children }) => 
       throw "No se detecta workflow valido"
     }
 
-    const encabezados: string[] = obtenerEncabezadosWorkflow(parsedWorkflow)
+    const encabezados: string[] = getWorkflowHeaders(parsedWorkflow)
     const valuesExpExample: any = []
     let solicitudes = Object.keys(parsedWorkflow)
     let expExample = parsedWorkflow[solicitudes[0]][0]

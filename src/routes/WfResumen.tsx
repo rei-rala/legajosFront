@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import CuadroAnalistas from "../components/resumen/resumenAnalistas/ResumenAnalistas";
+import CuadroAnalistas from "../components/resumenAnalistas/resumenAnalistas/ResumenAnalistas";
 import { useWorkflow } from "../context";
 
 const WfResumen: React.FC = () => {
@@ -21,7 +21,8 @@ const WfResumen: React.FC = () => {
 
 
   return <section>
-    <h1>Resumen de Workflow</h1> <Link to="/workflow">Cargar otro workflow</Link>
+    <h1>Resumen de Workflow</h1>
+    <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
     <CuadroAnalistas />
   </section>;
 }

@@ -15,8 +15,8 @@ const Navbar: React.FC = () => {
         </li>
 
         <li>
-          <NavLink to="/workflow/resumen" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
-            Resumen
+          <NavLink to="/workflow/analistas" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
+            Analistas
           </NavLink>
         </li>
 

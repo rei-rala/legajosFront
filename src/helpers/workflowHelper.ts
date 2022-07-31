@@ -1,4 +1,4 @@
-import { moment } from "../libs"
+import moment from "../libs/moment";
 
 export function getColumnSolicitudExpediente(titles: string[]) {
   let currentCodExpedienteColumnName = import.meta.env.VITE_WF_COD_SOLI_COLS.toLowerCase().split("|") ?? ["codigo solicitud"];
@@ -40,7 +40,7 @@ export function parseWfObjectByName(title: string, value: any): DatoExpediente {
 
   // float
   if (currentWfColumnFloat.includes(titleLower) || titleLower.includes('importe')) {
-    return +value.replace(".", "").replace(",", ".")
+    return new Intl.NumberFormat('es').format(value.replace(".", "").replace(",", "."))
   }
 
   if (titleLower.includes('fecha') || currentWfColumnDate.includes(titleLower)) {
@@ -127,22 +127,21 @@ export async function parseWorkflow(workflow: string) {
   return workflowObject
 }
 
+export function getWorkflowHeaders(workflow: Workflow | null) {
+  let headers: string[] = []
 
-export function obtenerEncabezadosWorkflow(workflow: Workflow | null) {
+
   if (!workflow) {
-    return ["Workflow no valido"]
+    return headers
   }
 
-  let encabezados: string[] = []
-
-  for (let solicitud in workflow) {
-    for (let expediente of workflow[solicitud]) {
-      for (let columna in expediente) {
-        encabezados.push(columna)
-      }
+  for (const sol in workflow) {
+    for (const exp of workflow[sol]) {
+      headers = Object.keys(exp)
+      break;
     }
     break;
   }
 
-  return encabezados
+  return headers
 }

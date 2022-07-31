@@ -1,67 +1,78 @@
-import moment from "moment";
-import React, { useEffect, useMemo } from "react";
-import { Navigate, NavLink } from "react-router-dom";
-import { Link, useParams } from "react-router-dom";
-import Asignar from "../components/tablas/Asignar";
-import Base from "../components/tablas/Completo";
-import Devueltas from "../components/tablas/Devueltas";
-import EnAnalisis from "../components/tablas/EnAnalisis";
-import Ingresar from "../components/tablas/Ingresar";
-import Pendientes from "../components/tablas/Pendientes";
-import Resumen from "../components/tablas/Resumen";
-import Supervision from "../components/tablas/Supervision";
+import React, { useEffect, useMemo, useState } from "react";
+import { Navigate, NavLink, Link, useParams } from "react-router-dom";
+import { Asignar, Devueltas, EnAnalisis, Ingresar, Pendientes, Supervision, Resumen, Completo } from "../components/tablas";
 import columnasWf from "../config";
 import { useWorkflow } from "../context";
+import { getWorkflowHeaders } from "../helpers/workflowHelper";
+import moment, { Moment } from "../libs/moment";
+//import OpcionesTabla from "../components/OpcionesTabla/OpcionesTabla";
 
 const { canal, codigoSol, codigoExp, estadoExp, razonSocial, fechaIngreso, fechaAsignadoAnalista, faltaInfo, faltaInfoDesde, faltaInfoHasta, asesorComercial, sucursal, analista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
 
 
-function getWorkflowHeaders(workflow: Workflow | null) {
-  let headers: string[] = []
 
-
-  if (!workflow) {
-    return headers
-  }
-
-  for (const sol in workflow) {
-    for (const exp of workflow[sol]) {
-      headers = Object.keys(exp)
-      break;
-    }
-    break;
-  }
-
-  return headers
+function saveDateToSession(dateAsString: string) {
+  const date = moment(dateAsString)
+  const dateAsStringWithFormat = date.format("YYYY-MM-DD")
+  sessionStorage.setItem("date", dateAsStringWithFormat)
 }
+
+function retrieveLastDateFromSession() {
+  const lastDate = sessionStorage.getItem("lastDate") || undefined
+  let asMoment = moment(lastDate)
+
+  if (!asMoment.isValid()) {
+    asMoment = moment()
+  }
+  return asMoment
+}
+
 
 const WfTablas: React.FC = () => {
   const { parsedWorkflow } = useWorkflow()
   const { seccion } = useParams()
 
+  let [dayFiltered, setDayFiltered] = useState<Moment>(retrieveLastDateFromSession())
+  const setDayHtml = (dayHtmlFormat: string) => {
+    saveDateToSession(dayHtmlFormat)
+    setDayFiltered(retrieveLastDateFromSession())
+  }
+
   const headers = useMemo(() => getWorkflowHeaders(parsedWorkflow), [parsedWorkflow])
 
-  const completoTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+  const [count, setCount] = useState({
+    asignar: 0,
+    devueltas: 0,
+    analisis: 0,
+    ingresar: 0,
+    pendientes: 0,
+    supervision: 0
+  })
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+  const workflow = useMemo(() => parsedWorkflow, [parsedWorkflow, dayFiltered])
+
+  const completoTBody = useMemo(() => {
+    let full: { [codigoSol: string | number]: Expediente } = {}
+
+
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en full, es creada con algunos valores ya unicos
+        if (!full[solCode]) {
+          full[solCode] = {}
         }
 
         for (let [column, value] of Object.entries(expCode)) {
-          tableBody[solCode][column] = value
+          full[solCode][column] = value
           /*        
             if (column in columns.date) {
-              tableBody[solCode][column] = value
+              full[solCode][column] = value
             }
   
             if (column in columns.float) {
-              tableBody[solCode][column] = 0
+              full[solCode][column] = 0
             }
           */
 
@@ -69,14 +80,18 @@ const WfTablas: React.FC = () => {
         break;
       }
     }
-    return tableBody
-  }, [parsedWorkflow, headers])
+    return full
+  }, [workflow, headers, dayFiltered])
 
   const asignarTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+    let asignar: { [codigoSol: string | number]: Expediente } = {}
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+    if (!workflow) {
+      return asignar
+    }
+
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
         // Pre chequeos
@@ -86,34 +101,34 @@ const WfTablas: React.FC = () => {
           continue;
         }
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en asignar, es creada con algunos valores ya unicos
+        if (!asignar[solCode]) {
+          asignar[solCode] = {}
         }
 
-        tableBody[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode]["Días GR"] = moment().diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
+        asignar[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        asignar[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol]
-        tableBody[solCode][estadoExp] = expCode[estadoExp]
-        tableBody[solCode][razonSocial] = expCode[razonSocial]
-        tableBody[solCode][analista] = expCode[analista]
+        asignar[solCode][codigoSol] = expCode[codigoSol]
+        asignar[solCode][estadoExp] = expCode[estadoExp]
+        asignar[solCode][razonSocial] = expCode[razonSocial]
+        asignar[solCode][analista] = expCode[analista]
 
-        tableBody[solCode][canal] = expCode[canal]
-        tableBody[solCode][sucursal] = expCode[sucursal]
-        tableBody[solCode][asesorComercial] = expCode[asesorComercial]
+        asignar[solCode][canal] = expCode[canal]
+        asignar[solCode][sucursal] = expCode[sucursal]
+        asignar[solCode][asesorComercial] = expCode[asesorComercial]
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return tableBody
-  }, [parsedWorkflow])
+    return asignar
+  }, [workflow, dayFiltered])
 
   const devueltasTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+    let devueltas: { [codigoSol: string | number]: Expediente } = {}
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
         // Pre chequeos
@@ -126,40 +141,40 @@ const WfTablas: React.FC = () => {
         }
 
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en devueltas, es creada con algunos valores ya unicos
+        if (!devueltas[solCode]) {
+          devueltas[solCode] = {}
         }
 
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol]
-        tableBody[solCode][estadoExp] = expCode[estadoExp]
-        tableBody[solCode][razonSocial] = expCode[razonSocial]
-        tableBody[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfo] = '-'
-        tableBody[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][analista] = expCode[analista]
-        tableBody[solCode][canal] = expCode[canal]
-        tableBody[solCode][sucursal] = expCode[sucursal]
-        tableBody[solCode][asesorComercial] = expCode[asesorComercial]
-        tableBody[solCode]["Días GR"] = moment().diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días asignado"] = moment().diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        devueltas[solCode][codigoSol] = expCode[codigoSol]
+        devueltas[solCode][estadoExp] = expCode[estadoExp]
+        devueltas[solCode][razonSocial] = expCode[razonSocial]
+        devueltas[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][faltaInfo] = '-'
+        devueltas[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][analista] = expCode[analista]
+        devueltas[solCode][canal] = expCode[canal]
+        devueltas[solCode][sucursal] = expCode[sucursal]
+        devueltas[solCode][asesorComercial] = expCode[asesorComercial]
+        devueltas[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
+        devueltas[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        devueltas[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return tableBody
-  }, [parsedWorkflow])
+    return devueltas
+  }, [workflow, dayFiltered])
 
   const analisisTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+    let analisis: { [codigoSol: string | number]: Expediente } = {}
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
         // Pre chequeos
@@ -172,40 +187,40 @@ const WfTablas: React.FC = () => {
         }
 
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en analisis, es creada con algunos valores ya unicos
+        if (!analisis[solCode]) {
+          analisis[solCode] = {}
         }
 
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol]
-        tableBody[solCode][estadoExp] = expCode[estadoExp]
-        tableBody[solCode][razonSocial] = expCode[razonSocial]
-        tableBody[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfo] = '-'
-        tableBody[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][analista] = expCode[analista]
-        tableBody[solCode][canal] = expCode[canal]
-        tableBody[solCode][sucursal] = expCode[sucursal]
-        tableBody[solCode][asesorComercial] = expCode[asesorComercial]
-        tableBody[solCode]["Días GR"] = moment().diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días asignado"] = moment().diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        analisis[solCode][codigoSol] = expCode[codigoSol]
+        analisis[solCode][estadoExp] = expCode[estadoExp]
+        analisis[solCode][razonSocial] = expCode[razonSocial]
+        analisis[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][faltaInfo] = '-'
+        analisis[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][analista] = expCode[analista]
+        analisis[solCode][canal] = expCode[canal]
+        analisis[solCode][sucursal] = expCode[sucursal]
+        analisis[solCode][asesorComercial] = expCode[asesorComercial]
+        analisis[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
+        analisis[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        analisis[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return tableBody
-  }, [parsedWorkflow])
+    return analisis
+  }, [workflow, dayFiltered])
 
   const ingresarTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+    let ingresar: { [codigoSol: string | number]: Expediente } = {}
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
         // Pre chequeos
@@ -216,30 +231,30 @@ const WfTablas: React.FC = () => {
         }
 
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en ingresar, es creada con algunos valores ya unicos
+        if (!ingresar[solCode]) {
+          ingresar[solCode] = {}
         }
 
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol]
-        tableBody[solCode][estadoExp] = expCode[estadoExp]
-        tableBody[solCode][razonSocial] = expCode[razonSocial]
-        tableBody[solCode][canal] = expCode[canal]
-        tableBody[solCode][sucursal] = expCode[sucursal]
-        tableBody[solCode][asesorComercial] = expCode[asesorComercial]
+        ingresar[solCode][codigoSol] = expCode[codigoSol]
+        ingresar[solCode][estadoExp] = expCode[estadoExp]
+        ingresar[solCode][razonSocial] = expCode[razonSocial]
+        ingresar[solCode][canal] = expCode[canal]
+        ingresar[solCode][sucursal] = expCode[sucursal]
+        ingresar[solCode][asesorComercial] = expCode[asesorComercial]
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return tableBody
-  }, [parsedWorkflow])
+    return ingresar
+  }, [workflow, dayFiltered])
 
   const pendientesTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+    let pendientes: { [codigoSol: string | number]: Expediente } = {}
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
         // Pre chequeos
@@ -251,40 +266,40 @@ const WfTablas: React.FC = () => {
         }
 
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en pendientes, es creada con algunos valores ya unicos
+        if (!pendientes[solCode]) {
+          pendientes[solCode] = {}
         }
 
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol]
-        tableBody[solCode][estadoExp] = expCode[estadoExp]
-        tableBody[solCode][razonSocial] = expCode[razonSocial]
-        tableBody[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfo] = '-'
-        tableBody[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][analista] = expCode[analista]
-        tableBody[solCode][canal] = expCode[canal]
-        tableBody[solCode][sucursal] = expCode[sucursal]
-        tableBody[solCode][asesorComercial] = expCode[asesorComercial]
-        tableBody[solCode]["Días GR"] = moment().diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días asignado"] = moment().diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        pendientes[solCode][codigoSol] = expCode[codigoSol]
+        pendientes[solCode][estadoExp] = expCode[estadoExp]
+        pendientes[solCode][razonSocial] = expCode[razonSocial]
+        pendientes[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][faltaInfo] = '-'
+        pendientes[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][analista] = expCode[analista]
+        pendientes[solCode][canal] = expCode[canal]
+        pendientes[solCode][sucursal] = expCode[sucursal]
+        pendientes[solCode][asesorComercial] = expCode[asesorComercial]
+        pendientes[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
+        pendientes[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        pendientes[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return tableBody
-  }, [parsedWorkflow])
+    return pendientes
+  }, [workflow, dayFiltered])
 
   const supervisionTBody = useMemo(() => {
     let tableBody: { [codigoSol: string | number]: Expediente } = {}
 
-    for (const solCode in parsedWorkflow) {
-      let sol = parsedWorkflow[solCode]
+    for (const solCode in workflow) {
+      let sol = workflow[solCode]
       for (const expCode of sol) {
 
         // Pre chequeos
@@ -316,32 +331,46 @@ const WfTablas: React.FC = () => {
         tableBody[solCode][canal] = expCode[canal]
         tableBody[solCode][sucursal] = expCode[sucursal]
         tableBody[solCode][asesorComercial] = expCode[asesorComercial]
-        tableBody[solCode]["Días GR"] = moment().diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días asignado"] = moment().diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días supervisión"] = moment().diff(moment(expCode[fechaFinalizadoAnalista], "DD/MM/YYYY"), 'days')
+        tableBody[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
+        tableBody[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        tableBody[solCode]["Días supervisión"] = dayFiltered.diff(moment(expCode[fechaFinalizadoAnalista], "DD/MM/YYYY"), 'days')
         tableBody[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
+
     return tableBody
-  }, [parsedWorkflow])
+  }, [workflow, dayFiltered])
+
 
   useEffect(() => {
     document.title = "Workflow | Resumen: Tablas";
   }, []);
 
+  useEffect(() => {
+    setCount({
+      asignar: Object.keys(pendientesTBody).length,
+      devueltas: Object.keys(devueltasTBody).length,
+
+      analisis: Object.keys(analisisTBody).length,
+      ingresar: Object.keys(ingresarTBody).length,
+
+      pendientes: Object.keys(pendientesTBody).length,
+      supervision: Object.keys(supervisionTBody).length,
+    })
+  }, [])
 
   const seccionComponent = useMemo(() => {
-    if (!parsedWorkflow) {
+    if (!workflow) {
       return null
     }
 
     switch (seccion) {
       case undefined:
       case "":
-        return <Base tableBody={completoTBody} headers={headers} />
+        return <Completo tableBody={completoTBody} headers={headers} />
       case "ingresar":
         return <Ingresar tableBody={ingresarTBody} />
       case "analisis":
@@ -355,15 +384,16 @@ const WfTablas: React.FC = () => {
       case "supervision":
         return <Supervision tableBody={supervisionTBody} />
       case "resumen":
-        return <Resumen />
+        return <Resumen counters={count} supervisionTBody={supervisionTBody} analisisTBody={analisisTBody} fullTBody={completoTBody} />
       default:
         return null
     }
-  }, [parsedWorkflow, seccion])
+  }, [workflow, seccion])
 
   return <section>
-    <h1>Tabla resumen </h1> <Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}>Cargar otro workflow?</Link>
-    {parsedWorkflow ? (
+    <h1>Tabla resumen</h1>
+    <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
+    {workflow ? (
       <div>
         <div>
           {/* TODO: rutas dinamicas */}
@@ -373,11 +403,11 @@ const WfTablas: React.FC = () => {
           <b> | </b>
           <NavLink to="/workflow/tablas/asignar" end className={({ isActive }) => isActive ? "navActive" : ""}>Asignar</NavLink>
           <b> | </b>
-          <NavLink to="/workflow/tablas/analisis" end className={({ isActive }) => isActive ? "navActive" : ""}>En análisis</NavLink>
-          <b> | </b>
           <NavLink to="/workflow/tablas/pendientes" end className={({ isActive }) => isActive ? "navActive" : ""}>Pendientes</NavLink>
           <b> | </b>
           <NavLink to="/workflow/tablas/devueltas" end className={({ isActive }) => isActive ? "navActive" : ""}>Devueltas</NavLink>
+          <b> | </b>
+          <NavLink to="/workflow/tablas/analisis" end className={({ isActive }) => isActive ? "navActive" : ""}>En análisis</NavLink>
           <b> | </b>
           <NavLink to="/workflow/tablas/supervision" end className={({ isActive }) => isActive ? "navActive" : ""}>En supervisión</NavLink>
           <br /><br />
@@ -392,6 +422,8 @@ const WfTablas: React.FC = () => {
         <Link to="/workflow">Cargar un Workflow</Link>
       </div>
     )}
+
+    {/* <OpcionesTabla dayHtml={dayFiltered.format("YYYY-MM-DD")} setDayHtml={setDayHtml} /> */}
   </section>;
 }
 

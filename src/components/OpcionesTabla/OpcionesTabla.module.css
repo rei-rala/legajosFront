@@ -1,0 +1,36 @@
+.opcionesContainer {
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+}
+
+.opciones {
+  overflow: hidden;
+
+  border-radius: 1rem;
+  border: 1px solid red;
+  height: 5rem;
+  width: 10rem;
+  background: white;
+
+  transition: all 1s;
+}
+
+.opciones button {
+  position: absolute;
+}
+
+.hide {
+  height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.opcionesList {
+  display: flex;
+  padding: 10px;
+  height: 100%;
+  gap: 0.5rem;
+  font-size: 0.6rem;
+}

@@ -1,4 +1,4 @@
-type DatoExpediente = string | number | null;
+type DatoExpediente = string | number | NumberFormat | null;
 
 type Expediente = {
   [columna: string | number]: DatoExpediente;
@@ -21,10 +21,12 @@ interface ICuadroAnalistaProps {
   handleHide: (e: React.ChangeEvent<HTMLInputElement>, nombreAnalista: string) => void;
 }
 
+type TableBody = {
+  [codigoSol: string]: Expediente;
+  [codigoSol: number]: Expediente;
+}
+
 interface IWorkflowTable {
   headers?: string[],
-  tableBody: {
-    [codigoSol: string]: Expediente;
-    [codigoSol: number]: Expediente;
-  },
+  tableBody: TableBody
 }
