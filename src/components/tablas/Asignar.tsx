@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import TablaGenerica from "./generica/TablaGenerica";
+import TablaGenerica from "./TablaGenerica/TablaGenerica";
 import columnasWf from "../../config";
 
 const tableName = "analisis"
@@ -16,7 +16,7 @@ const Asignar: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
   return (
     <div>
-      <h3 style={{ marginTop: '1rem', marginBottom: "0.5rem" }}>Mostrando tabla de legajos ingresados sin asignar</h3>
+      <h3>Mostrando legajos ingresados sin asignar</h3>
       <TablaGenerica headers={validColumns} tableBody={tableBody} tableName={tableName} />
     </div>
   )

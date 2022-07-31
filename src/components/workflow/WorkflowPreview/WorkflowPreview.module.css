@@ -8,10 +8,6 @@
   overflow: scroll hidden;
 }
 
-.table {
-  text-align: center;
-}
-
 .table :is(td, th) {
   min-width: 10rem;
 }

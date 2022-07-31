@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import WorkflowPreview from "./preview/WorkflowPreview";
-import WorkflowInput from "./input/WorkflowInput";
+import WorkflowPreview from "./WorkflowPreview/WorkflowPreview";
+import WorkflowInput from "./WorkflowInput/WorkflowInput";
 import { parseWorkflow } from "../../helpers/workflowHelper";
 import { useWorkflow, useLoading } from "../../context";
 
