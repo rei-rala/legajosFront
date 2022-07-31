@@ -1,4 +1,3 @@
-import { Loader } from "../components/";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type LoadingContextType = {
@@ -31,11 +30,11 @@ export const LoadingContext: (props: Props) => JSX.Element = ({ children }) => {
 
   /**
    * Adds a reason to the list of reasons to be loading.
-   * @param reason: string
-   * @description: Push a reason to the currently loading array
+   * @param reason string
+   * @description Push a reason to the currently loading array
    */
-  const pushLoading = (reason: string) => {
-    if (reason in currentlyLoading) {
+  function pushLoading (reason: string) {
+    if (currentlyLoading.includes(reason)) {
       return;
     }
     setCurrentlyLoading([...currentlyLoading, reason]);
@@ -43,10 +42,10 @@ export const LoadingContext: (props: Props) => JSX.Element = ({ children }) => {
 
   /**
    * Removes the reason from the currently loading array.
-   * @param reason: string
-   * @description: Removes the reason from the currently loading array.
+   * @param reason string
+   * @description Removes the reason from the currently loading array.
    */
-  const popLoading = (reason: string) => {
+  function popLoading (reason: string) {
     setCurrentlyLoading(currentlyLoading.filter(r => r !== reason));
   }
 
