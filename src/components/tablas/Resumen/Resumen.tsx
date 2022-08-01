@@ -124,7 +124,7 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
 
         <div>
           <p>Contamos con {qSolicitudes} legajo{qSolicitudes > 1 && "s"} en riesgos </p>
-          <p>El {dayFiltered.locale('es').format("dddd DD [de] MMMM")} {cantidadLegajosIngresados === 0 ? "no ingresaron" : "ingresaron " + cantidadLegajosIngresados} legajos</p>
+          <p>El {dayFiltered.locale('es').format("dddd D [de] MMMM")} {cantidadLegajosIngresados === 0 ? "no hubo" : "hubo " + cantidadLegajosIngresados} ingresos</p>
         </div>
 
 

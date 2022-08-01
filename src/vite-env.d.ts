@@ -7,7 +7,9 @@ interface ImportMetaEnv {
   readonly VITE_WF_EST_EXPE_COLS: string
   readonly VITE_WF_COD_EXPE_COLS: string
   readonly VITE_WF_COD_SOLI_COLS: string
+  readonly VITE_WF_CANAL_RIESGOS: string
   readonly VITE_WF_CANAL_COLS: string
+  readonly VITE_WF_CANAL_ALT_COLS: string
   readonly VITE_VW_LINEA_COL: string
   readonly VITE_VW_SUBLINEA_COL: string
   readonly VITE_WF_RAZON_SOCIAL_COL: string

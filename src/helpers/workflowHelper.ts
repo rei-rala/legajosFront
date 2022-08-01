@@ -1,3 +1,4 @@
+import columnasWf from "../config";
 import moment from "../libs/moment";
 
 export function getColumnSolicitudExpediente(titles: string[]) {
@@ -23,8 +24,9 @@ export function getColumnNameCanal() {
 
 
 export function parseWfObjectByName(title: string, value: any): DatoExpediente {
-  let currentWfColumnDate = import.meta.env.VITE_WF_DATE_COLUMNS.toLowerCase().split("|") || []
-  let currentWfColumnFloat = import.meta.env.VITE_WF_FLOAT_COLUMNS.toLowerCase().split("|") || []
+  const { date, float } = columnasWf;
+  let currentWfColumnDate = date || []
+  let currentWfColumnFloat = float || []
 
   const titleLower = title.toLowerCase();
   let parsedValue = value.trim()
@@ -37,10 +39,12 @@ export function parseWfObjectByName(title: string, value: any): DatoExpediente {
   if (!isNaN(+value)) {
     return +value
   }
-
+  
   // float
   if (currentWfColumnFloat.includes(titleLower) || titleLower.includes('importe')) {
-    return new Intl.NumberFormat('es').format(value.replace(".", "").replace(",", "."))
+    let arrValue = parsedValue.split("").filter((element: string) => [".", "."].includes(element) === false).map((element: string) => element === "," ? "." : element).join("")
+    
+    return +arrValue !== 0 ? +arrValue : null
   }
 
   if (titleLower.includes('fecha') || currentWfColumnDate.includes(titleLower)) {
@@ -147,14 +151,21 @@ export function getWorkflowHeaders(workflow: Workflow | null) {
 }
 
 
+export function getCanalGr(expediente: Expediente) {
+  const { canalGr } = columnasWf
+
+  return expediente[canalGr]
+}
+
 
 export function getNivel(expediente: Expediente) {
-  let nivelColNames = import.meta.env.VITE_WF_CANAL_COLS.toLowerCase().split("|") || ["Grupo de Canal Análisis según SGA"]
+  const { canal, canalAlt } = columnasWf
+  let nivelColNames = [canal, canalAlt] || ["Grupo de Canal Análisis según SGA"]
   let found = "n/a";
 
   for (let property in expediente) {
-    if (nivelColNames.includes(property.toLowerCase())) {
-      found = (expediente[property] as string ?? "").toLowerCase()
+    if (nivelColNames.includes(property)) {
+      found = ("" + expediente[property]).toLowerCase()
       break
     }
   }
@@ -175,16 +186,16 @@ export function getNivel(expediente: Expediente) {
 }
 
 export function getImporteSolicitud(expediente: Expediente) {
-  let importeSolicitudColNames = import.meta.env.VITE_WF_IMPORTE_SOLICITUD_COLS.split("|") || ["Importe Solicitado"]
-  let monedaSolicitudColName = import.meta.env.VITE_WF_MONEDA_SOLICITUD_COLS.split("|") || ["Moneda Solicitud"]
+  const { importeOrigen, importeOrigenAlt, monedaOrigen } = columnasWf
+  const importeSolicitudColNames = [importeOrigen, importeOrigenAlt] || ["Importe Solicitado"]
+  let monedaSolicitudColName = [monedaOrigen] || ["Moneda Solicitud"]
   let found: string = "";
 
-
-  for (let impColName in importeSolicitudColNames) {
+  for (let impColName of importeSolicitudColNames) {
     let tryColName = expediente[impColName]
 
     if (tryColName) {
-      let miles = (""+((tryColName ?? 0) / 1000)).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+      let miles = ("" + ((tryColName ?? 0) / 1000))
 
       found = found + miles.toLocaleString() + " M"
     }

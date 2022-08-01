@@ -25,6 +25,7 @@ type Props = { children: React.ReactNode }
 
 export const WorkflowContext: (props: Props) => JSX.Element = ({ children }) => {
   const [parsedWorkflow, setParsedWorkflow] = useState<Workflow | null>(null)
+
   const [datosWF, setDatosWF] = useState<PreviewWorkflow>({
     encabezados: [],
     qSolicitudes: 0,
