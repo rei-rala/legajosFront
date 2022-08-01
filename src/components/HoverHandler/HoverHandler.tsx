@@ -48,6 +48,11 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
   const estado = () => {
     let sinAsignar = !data[0][analista]
     let isDevuelto = data[0][fechaDevolucion]
+    let pendienteIngreso = !data[0][fechaIngresoCol]
+
+    if (pendienteIngreso) {
+      return <b>Pendiente de ingreso</b>
+    }
 
     if (sinAsignar) {
       return <b>Sin asignar</b>
@@ -79,7 +84,7 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
         <p> {sol.canal} {sol.canalDeGR}</p>
         <p></p>
         <p>{sol.asesor} ({sol.sucursal}) </p>
-        <p>Ingreso {sol.fechaIngreso}</p>
+        <p>Ingreso a GR {sol.fechaIngreso}</p>
         <hr />
       </div>
       <table className={styles.hoverTable}>

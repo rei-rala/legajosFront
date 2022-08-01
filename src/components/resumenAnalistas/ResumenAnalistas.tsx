@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import columnasWf from "../../config";
 import { useWorkflow } from "../../context";
 import HoverHandler from "../HoverHandler/HoverHandler";
 import CuadroAnalista from "./cuadroAnalista/CuadroAnalista";
@@ -11,6 +12,8 @@ type AnalistaCuadro = {
   isHiding: boolean,
   solicitudes: any[];
 }
+
+const { analista: analistaColumn, fechaIngreso: fechaIngresoColumn } = columnasWf
 
 const ResumenAnalistas: React.FC = () => {
   const { parsedWorkflow } = useWorkflow()
@@ -35,8 +38,15 @@ const ResumenAnalistas: React.FC = () => {
 
     // Por que habia hecho la estructura de datos asi?
     parsedWorkflow && Object.values(parsedWorkflow).forEach((solicitud) => {
-      const nombre = solicitud[0]["Analista Riesgo"] as string
+      const ingresado = solicitud[0][fechaIngresoColumn]
+
+      if (!ingresado) {
+        return
+      }
+
+      const nombre = solicitud[0][analistaColumn] as string
       const existe = analistas.find(a => a.nombre === nombre);
+
 
       if (existe) {
         existe.solicitudes.push(solicitud)
