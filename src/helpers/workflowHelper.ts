@@ -2,9 +2,16 @@ import columnasWf from "../config";
 import moment from "../libs/moment";
 
 export function getColumnSolicitudExpediente(titles: string[]) {
-  let currentCodExpedienteColumnName = import.meta.env.VITE_WF_COD_SOLI_COLS.toLowerCase().split("|") ?? ["codigo solicitud"];
+  const { codigoSol, codigoSolAlt } = columnasWf
+  let currentCodExpedienteColumnName = [codigoSol, codigoSolAlt] ?? ["codigo solicitud"];
 
-  return titles.findIndex(element => currentCodExpedienteColumnName.includes(element.toLowerCase()));
+  for (let v of currentCodExpedienteColumnName) {
+    let index = titles.indexOf(v)
+
+    if (index >= 0) {
+      return index
+    }
+  }
 }
 
 
@@ -39,11 +46,11 @@ export function parseWfObjectByName(title: string, value: any): DatoExpediente {
   if (!isNaN(+value)) {
     return +value
   }
-  
+
   // float
   if (currentWfColumnFloat.includes(titleLower) || titleLower.includes('importe')) {
     let arrValue = parsedValue.split("").filter((element: string) => [".", "."].includes(element) === false).map((element: string) => element === "," ? "." : element).join("")
-    
+
     return +arrValue !== 0 ? +arrValue : null
   }
 
@@ -79,14 +86,18 @@ export async function parseWorkflow(workflow: string) {
     return null;
   }
 
-  let lineSize = arrAux[0].length
+  let lineSize = arrAux[0]?.length
   arrAux = arrAux.filter(v => v.length === lineSize)
-
 
   // TODO: Make more && smaller functions
   let columnTitles = arrAux[0] ?? undefined;
   let codSolIndex = getColumnSolicitudExpediente(columnTitles)
   let codExpIndex = getColumnCodigoExpediente(columnTitles);
+
+  if (!codSolIndex || codExpIndex < 0) {
+    alert("No se encontro el codigo de solicitud en el workflow")
+    return null
+  }
 
   for (let row of arrAux) {
     const codigoSolicitud = +row[codSolIndex]

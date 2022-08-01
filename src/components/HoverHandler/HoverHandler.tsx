@@ -8,7 +8,7 @@ interface HoverHandlerProps {
   data?: any
 }
 
-const { analista, razonSocial: razonSocialCol, codigoSol, codigoExp, canalGr, canal: canalSol, canalAlt: canalSolAlt, linea, sublinea, asesorComercial, sucursal: sucursalCol, fechaIngreso: fechaIngresoCol, fechaDevolucion, fechaFinalizadoAnalista, faltaInfo } = columnasWf
+const { analista, razonSocial: razonSocialCol, codigoSol, codigoSolAlt, codigoExp, canalGr, canal: canalSol, canalAlt: canalSolAlt, linea, sublinea, asesorComercial, sucursal: sucursalCol, fechaIngreso: fechaIngresoCol, fechaDevolucion, fechaFinalizadoAnalista, faltaInfo } = columnasWf
 
 const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
 
@@ -36,7 +36,7 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
   })
 
   const sol = {
-    codigo: data[0][codigoSol],
+    codigo: data[0][codigoSol] ?? data[0][codigoSolAlt],
     razonSocial: data[0][razonSocialCol],
     asesor: data[0][asesorComercial],
     canal: data[0][canalSol] ?? data[0][canalSolAlt],
