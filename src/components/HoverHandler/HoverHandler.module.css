@@ -1,18 +1,29 @@
 .wrapper {
   position: fixed;
-  bottom: 2vh;
-  left: 50%;
-  transform: translateX(-50%);
-
   padding: 0.5rem 1rem;
   border: 2px inset red;
   background-color: hsl(0, 0%, 100%);
+  max-width: 50vw;
   z-index: 5;
+  transform: translate(0, -100%);
+
+  overflow: hidden;
 }
 
-.top {
-  top: 2vh;
-  bottom: auto;
+.wrapper:hover {
+  display: none;
+}
+
+.top:not(.right) {
+  transform: translate(0, 0);
+}
+
+.right.top {
+  transform: translate(-100%, 0%);
+}
+
+.right:not(.top) {
+  transform: translate(-100%, -100%);
 }
 
 .hoverTable {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import columnasWf from "../../../config";
 import { useWorkflow } from "../../../context";
 import HoverHandler from "../../HoverHandler/HoverHandler";
@@ -13,12 +13,12 @@ interface props {
   tableName: string,
 }
 
-const { razonSocial, codigoSol, estadoExp, analista, asesorComercial } = columnasWf
+const { razonSocial, codigoSol, codigoSolAlt, estadoExp, canal, canalAlt, analista, asesorComercial } = columnasWf
 
 const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
-  const [currentSol, setCurrentSol] = React.useState<Expediente[] | undefined>();
   const { parsedWorkflow } = useWorkflow()
-  
+  const [hovered, setHovered] = useState<Expediente[] | undefined>(undefined)
+
   const cantidadSol = Object.values(tableBody).length
   // TODO: hacer esto mas limpio
   let doubledSizedCols = [estadoExp, analista, asesorComercial]
@@ -27,7 +27,8 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
   return (
     <>
       <i>{cantidadSol} solicitud{cantidadSol !== 1 && "es"} </i>
-      <HoverHandler data={currentSol} />
+
+      <HoverHandler data={hovered} />
 
       <div className={styles.tableContainer}>
         <table>
@@ -41,9 +42,13 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
           </thead>
           <tbody>
             {
-              Object.values(tableBody).map((exp, index) => <tr key={index}
-                onMouseEnter={() => parsedWorkflow && setCurrentSol(parsedWorkflow[exp[codigoSol]])}
-                onMouseLeave={() => setCurrentSol(undefined)}
+              Object.values(tableBody).map((exp, index) => <tr
+                key={index}
+                onMouseEnter={() => {
+                  let hoveredSolicitud = (exp[codigoSol] || exp[codigoSolAlt])
+                  parsedWorkflow && setHovered(parsedWorkflow[hoveredSolicitud])
+                }}
+                onMouseLeave={() => setHovered(undefined)}
               >
                 {
                   headers.map((value, index) => <td key={index} >

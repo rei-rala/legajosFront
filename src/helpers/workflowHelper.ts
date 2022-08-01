@@ -196,6 +196,17 @@ export function getNivel(expediente: Expediente) {
   return found
 }
 
+export const getGrupoCanal = (expediente: Expediente) => {
+  const { canal, canalAlt } = columnasWf
+  let nivelColNames = [canal, canalAlt] || ["Grupo de Canal Análisis según SGA"]
+
+  let found = "n/a";
+  for (let col of nivelColNames) {
+    console.log(col)
+  }
+}
+
+
 export function getImporteSolicitud(expediente: Expediente) {
   const { importeOrigen, importeOrigenAlt, monedaOrigen } = columnasWf
   const importeSolicitudColNames = [importeOrigen, importeOrigenAlt] || ["Importe Solicitado"]

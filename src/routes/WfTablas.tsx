@@ -7,8 +7,7 @@ import { getWorkflowHeaders } from "../helpers";
 import moment, { Moment } from "../libs/moment";
 //import OpcionesTabla from "../components/OpcionesTabla/OpcionesTabla";
 
-const { canal, codigoSol, codigoExp, estadoExp, razonSocial, fechaIngreso, fechaAsignadoAnalista, faltaInfo, faltaInfoDesde, faltaInfoHasta, asesorComercial, sucursal, analista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
-
+const { canal, canalAlt, codigoSol, codigoSolAlt, codigoExp, estadoExp, razonSocial, fechaIngreso, fechaAsignadoAnalista, faltaInfo, faltaInfoDesde, faltaInfoHasta, asesorComercial, sucursal, analista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
 
 
 function saveDateToSession(dateAsString: string) {
@@ -66,16 +65,6 @@ const WfTablas: React.FC = () => {
 
         for (let [column, value] of Object.entries(expCode)) {
           full[solCode][column] = value
-          /*        
-            if (column in columns.date) {
-              full[solCode][column] = value
-            }
-  
-            if (column in columns.float) {
-              full[solCode][column] = 0
-            }
-          */
-
         }
         break;
       }
@@ -92,14 +81,21 @@ const WfTablas: React.FC = () => {
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
-      for (const expCode of sol) {
 
+
+      for (const expCode of sol) {
         // Pre chequeos
         let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos"].includes((expCode[estadoExp] as string)) === false
-        let analistaAsignado = expCode[analista];
-        if (estadoExpInvalido || analistaAsignado) {
+        let analistaAsignado = !!expCode[analista];
+        let noEstaIngresado = !expCode[fechaIngreso];
+
+        if (estadoExpInvalido || analistaAsignado || noEstaIngresado) {
           continue;
         }
+
+        // Validando nombres de columnas por si se cambia el workflow
+        let currSol = !!expCode[codigoSol] ? codigoSol : codigoSolAlt
+        let currCanal = !!expCode[canal] ? canal : canalAlt
 
         // Si no existe la solicitud en asignar, es creada con algunos valores ya unicos
         if (!asignar[solCode]) {
@@ -109,12 +105,12 @@ const WfTablas: React.FC = () => {
         asignar[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
         asignar[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
 
-        asignar[solCode][codigoSol] = expCode[codigoSol]
+        asignar[solCode][codigoSol] = expCode[currSol]
         asignar[solCode][estadoExp] = expCode[estadoExp]
         asignar[solCode][razonSocial] = expCode[razonSocial]
         asignar[solCode][analista] = expCode[analista]
 
-        asignar[solCode][canal] = expCode[canal]
+        asignar[solCode][canal] = expCode[currCanal]
         asignar[solCode][sucursal] = expCode[sucursal]
         asignar[solCode][asesorComercial] = expCode[asesorComercial]
         // Por ahora solo tomaremos un expediente
@@ -147,7 +143,7 @@ const WfTablas: React.FC = () => {
         }
 
 
-        devueltas[solCode][codigoSol] = expCode[codigoSol]
+        devueltas[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
         devueltas[solCode][estadoExp] = expCode[estadoExp]
         devueltas[solCode][razonSocial] = expCode[razonSocial]
         devueltas[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
@@ -156,7 +152,7 @@ const WfTablas: React.FC = () => {
         devueltas[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
         devueltas[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
         devueltas[solCode][analista] = expCode[analista]
-        devueltas[solCode][canal] = expCode[canal]
+        devueltas[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
         devueltas[solCode][sucursal] = expCode[sucursal]
         devueltas[solCode][asesorComercial] = expCode[asesorComercial]
         devueltas[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
@@ -193,7 +189,7 @@ const WfTablas: React.FC = () => {
         }
 
 
-        analisis[solCode][codigoSol] = expCode[codigoSol]
+        analisis[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
         analisis[solCode][estadoExp] = expCode[estadoExp]
         analisis[solCode][razonSocial] = expCode[razonSocial]
         analisis[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
@@ -202,7 +198,7 @@ const WfTablas: React.FC = () => {
         analisis[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
         analisis[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
         analisis[solCode][analista] = expCode[analista]
-        analisis[solCode][canal] = expCode[canal]
+        analisis[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
         analisis[solCode][sucursal] = expCode[sucursal]
         analisis[solCode][asesorComercial] = expCode[asesorComercial]
         analisis[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
@@ -224,7 +220,7 @@ const WfTablas: React.FC = () => {
       for (const expCode of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = ["Solicitud - Documentación Faltante y Pendiente de Aprobación"].includes((expCode[estadoExp] as string)) === false
+        let estadoExpInvalido = !["Solicitud - Documentación Faltante y Pendiente de Aprobación"].includes((expCode[estadoExp] as string))
 
         if (estadoExpInvalido) {
           continue;
@@ -237,10 +233,10 @@ const WfTablas: React.FC = () => {
         }
 
 
-        ingresar[solCode][codigoSol] = expCode[codigoSol]
+        ingresar[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
         ingresar[solCode][estadoExp] = expCode[estadoExp]
         ingresar[solCode][razonSocial] = expCode[razonSocial]
-        ingresar[solCode][canal] = expCode[canal]
+        ingresar[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
         ingresar[solCode][sucursal] = expCode[sucursal]
         ingresar[solCode][asesorComercial] = expCode[asesorComercial]
         // Por ahora solo tomaremos un expediente
@@ -272,7 +268,7 @@ const WfTablas: React.FC = () => {
         }
 
 
-        pendientes[solCode][codigoSol] = expCode[codigoSol]
+        pendientes[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
         pendientes[solCode][estadoExp] = expCode[estadoExp]
         pendientes[solCode][razonSocial] = expCode[razonSocial]
         pendientes[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
@@ -281,7 +277,7 @@ const WfTablas: React.FC = () => {
         pendientes[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
         pendientes[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
         pendientes[solCode][analista] = expCode[analista]
-        pendientes[solCode][canal] = expCode[canal]
+        pendientes[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
         pendientes[solCode][sucursal] = expCode[sucursal]
         pendientes[solCode][asesorComercial] = expCode[asesorComercial]
         pendientes[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
@@ -319,7 +315,7 @@ const WfTablas: React.FC = () => {
         }
 
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol]
+        tableBody[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
         tableBody[solCode][estadoExp] = expCode[estadoExp]
         tableBody[solCode][razonSocial] = expCode[razonSocial]
         tableBody[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
@@ -328,7 +324,7 @@ const WfTablas: React.FC = () => {
         tableBody[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
         tableBody[solCode][fechaFinalizadoAnalista] = expCode[fechaFinalizadoAnalista] && moment(expCode[fechaFinalizadoAnalista], "DD/MM/YYYY").format("DD/MM")
         tableBody[solCode][analista] = expCode[analista]
-        tableBody[solCode][canal] = expCode[canal]
+        tableBody[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
         tableBody[solCode][sucursal] = expCode[sucursal]
         tableBody[solCode][asesorComercial] = expCode[asesorComercial]
         tableBody[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import columnasWf from "../../config";
-import { getImporteSolicitud, getLineaExpediente } from "../../helpers/workflowHelper";
+import { getGrupoCanal, getImporteSolicitud, getLineaExpediente } from "../../helpers/workflowHelper";
 
 import styles from "./HoverHandler.module.css"
 
@@ -91,7 +91,11 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
         <thead>
           <tr>
             {
-              reducedTitles.map((title, i) => <th key={title}>{title}</th>)
+              reducedTitles.map((title) => <th
+                key={title}
+              >
+                {title}
+              </th>)
             }
           </tr>
         </thead>
@@ -101,14 +105,18 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
             data.map(exp => <tr key={exp[codigoExp] + "row"}>
               {
                 tableTitles.map(title => {
+                  const titleLow = title.toLowerCase()
+
                   return <td
                     key={exp[codigoExp] + title}
                   >{
-                      title.toLowerCase().includes("importe")
-                        ? getImporteSolicitud(exp)
-                        : title === "Linea"
-                          ? getLineaExpediente(exp)
-                          : exp[title]
+                      titleLow.includes("canal") ?
+                        getGrupoCanal(exp[title])
+                        : titleLow.includes("importe")
+                          ? getImporteSolicitud(exp)
+                          : titleLow === "linea"
+                            ? getLineaExpediente(exp)
+                            : exp[title]
                     }
                   </td>
                 })
@@ -123,11 +131,22 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
 
 
 const HoverHandler: React.FC<HoverHandlerProps> = ({ data }) => {
-  const [mousePos, setMousePos] = React.useState({ y: 0 })
-  const isMouseAtBottom = () => mousePos.y > (window.innerHeight / 2)
+  const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 })
+  const [hhPos, setHhPos] = React.useState({
+    top: false,
+    right: false,
+  })
+
+  const isMouseAtTop = () => (window.innerHeight / 2) > mousePos.y
+  const isMouseAtRight = () => mousePos.x > (window.innerWidth / 2)
+
 
   const handleMouseMove = (e: any) => {
-    setMousePos({ y: e.clientY })
+    setMousePos({ x: e.clientX, y: e.clientY })
+    setHhPos({
+      right: isMouseAtRight(),
+      top: isMouseAtTop()
+    })
   }
 
   useEffect(() => {
@@ -137,7 +156,17 @@ const HoverHandler: React.FC<HoverHandlerProps> = ({ data }) => {
     }
   })
 
-  return data && <aside className={(isMouseAtBottom() && styles.top) + " " + styles.wrapper}>
+  return data && <aside
+    style={{
+      top: mousePos.y + (hhPos.top ? 15 : -15),
+      left: mousePos.x + (hhPos.right ? -15 : 15)
+    }}
+    className={
+      styles.wrapper + " " +
+      (hhPos.top ? styles.top : "") + " " +
+      (hhPos.right ? styles.right : "")
+    }
+  >
     <DataTransformer data={data} />
   </aside>
 }
