@@ -1,0 +1,30 @@
+.wrapper {
+  position: fixed;
+  bottom: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 0.5rem 1rem;
+  border: 2px inset red;
+  background-color: hsl(0, 0%, 100%);
+  z-index: 5;
+}
+
+.top {
+  top: 2vh;
+  bottom: auto;
+}
+
+.hoverTable {
+  box-shadow: none;
+  border-radius: 0.25rem;
+}
+
+.hoverTable td {
+  padding: 0.25rem 0.5rem;
+  max-width: 20vw;
+}
+
+.hoverTable tbody tr:nth-child(even) {
+  background-color: hsla(0, 0%, 0%, 0.1);
+}

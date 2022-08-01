@@ -8,6 +8,8 @@ const columnasWf = {
   fechaSolicitud: import.meta.env.VITE_WF_SOLICITUD_FECHA_COL ?? "",
   canal: import.meta.env.VITE_WF_CANAL_COLS ?? "",
   razonSocial: import.meta.env.VITE_WF_RAZON_SOCIAL_COL ?? "",
+  linea: import.meta.env.VITE_VW_LINEA_COL ?? "",
+  sublinea: import.meta.env.VITE_VW_SUBLINEA_COL ?? "",
 
   fechaIngreso: import.meta.env.VITE_WF_INGRESO_GR_FECHA_COL ?? "",
   asesorComercial: import.meta.env.VITE_VW_ASESOR_COM_COL ?? "",

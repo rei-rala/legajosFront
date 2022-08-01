@@ -21,6 +21,10 @@ interface ICuadroAnalistaProps {
   handleHide: (e: React.ChangeEvent<HTMLInputElement>, nombreAnalista: string) => void;
 }
 
+interface ICuadroAnalistaShowingProps extends ICuadroAnalistaProps {
+  showDetail: (codSolicitud: string | number | undefined) => void;
+}
+
 type TableBody = {
   [codigoSol: string]: Expediente;
   [codigoSol: number]: Expediente;

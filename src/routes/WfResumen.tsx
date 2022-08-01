@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import CuadroAnalistas from "../components/resumenAnalistas/ResumenAnalistas/ResumenAnalistas";
+import ResumenAnalistas from "../components/resumenAnalistas/ResumenAnalistas";
 import { useWorkflow } from "../context";
 
 const WfResumen: React.FC = () => {
@@ -22,7 +22,7 @@ const WfResumen: React.FC = () => {
 
   return <section>
     <h1>Resumen de Workflow</h1>
-    <CuadroAnalistas />
+    <ResumenAnalistas />
   </section>;
 }
 

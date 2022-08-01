@@ -1,5 +1,7 @@
 import React from "react";
 import columnasWf from "../../../config";
+import { useWorkflow } from "../../../context";
+import HoverHandler from "../../HoverHandler/HoverHandler";
 import styles from "./TablaGenerica.module.css";
 
 interface props {
@@ -11,16 +13,21 @@ interface props {
   tableName: string,
 }
 
+const { razonSocial, codigoSol, estadoExp, analista, asesorComercial } = columnasWf
+
 const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
+  const [currentSol, setCurrentSol] = React.useState<Expediente[] | undefined>();
+  const { parsedWorkflow } = useWorkflow()
+  
   const cantidadSol = Object.values(tableBody).length
   // TODO: hacer esto mas limpio
-  const { razonSocial, estadoExp, analista, asesorComercial } = columnasWf
   let doubledSizedCols = [estadoExp, analista, asesorComercial]
   let maxSizedCol = [razonSocial]
 
   return (
     <>
       <i>{cantidadSol} solicitud{cantidadSol !== 1 && "es"} </i>
+      <HoverHandler data={currentSol} />
 
       <div className={styles.tableContainer}>
         <table>
@@ -34,9 +41,14 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
           </thead>
           <tbody>
             {
-              Object.values(tableBody).map((exp, index) => <tr key={index}>
+              Object.values(tableBody).map((exp, index) => <tr key={index}
+                onMouseEnter={() => parsedWorkflow && setCurrentSol(parsedWorkflow[exp[codigoSol]])}
+                onMouseLeave={() => setCurrentSol(undefined)}
+              >
                 {
-                  headers.map((value, index) => <td key={index}>{exp[value]}</td>)
+                  headers.map((value, index) => <td key={index} >
+                    {exp[value]}
+                  </td>)
                 }
               </tr>
               )

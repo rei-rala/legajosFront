@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useWorkflow } from "../../../context";
-import CuadroAnalista from "../cuadroAnalista/CuadroAnalista";
-import CuadroAnalistaHidden from "../CuadroAnalistaHidden/CuadroAnalistaHidden";
+import { useWorkflow } from "../../context";
+import HoverHandler from "../HoverHandler/HoverHandler";
+import CuadroAnalista from "./cuadroAnalista/CuadroAnalista";
+import CuadroAnalistaHidden from "./CuadroAnalistaHidden/CuadroAnalistaHidden";
 import styles from "./ResumenAnalistas.module.css";
 
 type AnalistaCuadro = {
@@ -14,6 +15,7 @@ type AnalistaCuadro = {
 const ResumenAnalistas: React.FC = () => {
   const { parsedWorkflow } = useWorkflow()
   const [renderCount, setRenderCount] = useState(0)
+  const [currentHover, setCurrentHover] = useState<string | number | undefined>(undefined)
 
   const analistas: AnalistaCuadro[] = useMemo(getAnalistas, [parsedWorkflow, renderCount])
 
@@ -68,9 +70,10 @@ const ResumenAnalistas: React.FC = () => {
     <div>
       <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
       <h2>Cuadro de Analistas</h2><br />
+      <HoverHandler data={currentHover} />
       <div className={styles.analistasContainer}>
         {
-          showingAnalistas.map(analista => <CuadroAnalista key={analista.nombre} analista={analista.nombre} solicitudes={analista.solicitudes} handleHide={handleHide} />)
+          showingAnalistas.map(analista => <CuadroAnalista key={analista.nombre} analista={analista.nombre} solicitudes={analista.solicitudes} handleHide={handleHide} showDetail={setCurrentHover} />)
         }
       </div>
     </div>
