@@ -365,25 +365,6 @@ const WfTablas: React.FC = () => {
   }, [workflow, dayFiltered])
 
 
-
-  useEffect(() => {
-    document.title = "Workflow | Resumen: Tablas";
-  }, []);
-
-  useEffect(() => {
-    setCount({
-      ingresar: Object.keys(ingresarTBody).length,
-      asignar: Object.keys(asignarTBody).length,
-
-      pendientes: Object.keys(pendientesTBody).length,
-      analisis: Object.keys(analisisTBody).length,
-      supervision: Object.keys(supervisionTBody).length,
-
-      devueltas: Object.keys(devueltasTBody).length,
-    })
-
-  }, [completoTBody, ingresarTBody, asignarTBody, pendientesTBody, analisisTBody, supervisionTBody, devueltasTBody])
-
   const seccionComponent = useMemo(() => {
     if (!workflow) {
       return null
@@ -412,30 +393,61 @@ const WfTablas: React.FC = () => {
     }
   }, [workflow, seccion])
 
+  const rutas: {
+    [key: string]: string
+  } = {
+    "": "Completo",
+    "ingresar": "Ingresar",
+    "asignar": "Asignar",
+    "pendientes": "Pendientes",
+    "analisis": "En Análisis",
+    "supervision": "Supervisión",
+    "devueltas": "Devueltas",
+    "resumen": "Resumen"
+  }
+
+  useEffect(() => {
+    document.title = "Workflow | Resumen: Tablas";
+  }, []);
+
+  useEffect(() => {
+    setCount({
+      ingresar: Object.keys(ingresarTBody).length,
+      asignar: Object.keys(asignarTBody).length,
+
+      pendientes: Object.keys(pendientesTBody).length,
+      analisis: Object.keys(analisisTBody).length,
+      supervision: Object.keys(supervisionTBody).length,
+
+      devueltas: Object.keys(devueltasTBody).length,
+    })
+
+  }, [completoTBody, ingresarTBody, asignarTBody, pendientesTBody, analisisTBody, supervisionTBody, devueltasTBody])
+
   return <section>
     {workflow ? (
       <div>
         <h1>Tabla resumen</h1>
         <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
-        <div>
-          {/* TODO: rutas dinamicas? */}
-          <NavLink to="/workflow/tablas" end className={({ isActive }) => isActive ? "navActive" : ""}>Completo</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/ingresar" end className={({ isActive }) => isActive ? "navActive" : ""}>Ingresar</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/asignar" end className={({ isActive }) => isActive ? "navActive" : ""}>Asignar</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/pendientes" end className={({ isActive }) => isActive ? "navActive" : ""}>Pendientes</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/analisis" end className={({ isActive }) => isActive ? "navActive" : ""}>En análisis</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/supervision" end className={({ isActive }) => isActive ? "navActive" : ""}>En supervisión</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/devueltas" end className={({ isActive }) => isActive ? "navActive" : ""}>Devueltas</NavLink>
-          <b> | </b>
-          <NavLink to="/workflow/tablas/resumen" end className={({ isActive }) => isActive ? "navActive" : ""}>Resumen</NavLink>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'center',
+          }}
+        >
+          {
+            Object.keys(rutas).map((key: string) => {
+              return <NavLink
+                to={`/workflow/tablas/${key}`}
+                end className={({ isActive }) => isActive ? "navActive" : ""}
+                key={key}
+              >
+                {rutas[key]}
+              </NavLink>
+            })
+          }
         </div>
-        <br />
         <hr />
         {seccionComponent ?? <Navigate to="/workflow/tablas" />}
       </div>
