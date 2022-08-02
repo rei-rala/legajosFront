@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
         </li>
 
         <li>
-          <NavLink to="/workflow/tablas" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
+          <NavLink to="/workflow/tablas/" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
             Tablas
           </NavLink>
         </li>

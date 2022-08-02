@@ -1,3 +1,5 @@
+import moment from "../libs/moment";
+
 import {
   getColumnSolicitudExpediente,
   getColumnCodigoExpediente,
@@ -49,4 +51,22 @@ export {
   parseWorkflowData,
   parseWorkflow,
   getWorkflowHeaders
+}
+
+
+
+export function saveDateToSession(dateAsString: string) {
+  const date = moment(dateAsString)
+  const dateAsStringWithFormat = date.format("YYYY-MM-DD")
+  sessionStorage.setItem("date", dateAsStringWithFormat)
+}
+
+export function retrieveLastDateFromSession() {
+  const lastDate = sessionStorage.getItem("lastDate") || undefined
+  let asMoment = moment(lastDate)
+
+  if (!asMoment.isValid()) {
+    asMoment = moment()
+  }
+  return asMoment
 }
