@@ -95,7 +95,7 @@ export async function parseWorkflow(workflow: string) {
   let codSolIndex = getColumnSolicitudExpediente(columnTitles)
   let codExpIndex = getColumnCodigoExpediente(columnTitles);
 
-  if (!codSolIndex || codExpIndex < 0) {
+  if (codSolIndex === undefined || codExpIndex < 0) {
     alert("No se encontro el codigo de solicitud en el workflow")
     return null
   }
