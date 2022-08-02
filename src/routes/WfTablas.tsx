@@ -429,26 +429,35 @@ const WfTablas: React.FC = () => {
       <div>
         <h1>Tabla resumen</h1>
         <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
+        <hr style={{
+          marginBottom: '0',
+        }} />
         <div
           style={{
             display: 'flex',
-            gap: '1rem',
             justifyContent: 'center',
           }}
         >
           {
             Object.keys(rutas).map((key: string) => {
               return <NavLink
+                end
                 to={`/workflow/tablas/${key}`}
-                end className={({ isActive }) => isActive ? "navActive" : ""}
                 key={key}
+                style={({isActive})=> ({
+                  padding: "0.5rem",
+                  background: isActive ? 'var(--color-primary)' : '',
+                  color: isActive ? 'white' : '',
+                })}
               >
                 {rutas[key]}
               </NavLink>
             })
           }
         </div>
-        <hr />
+        <hr style={{
+          marginTop: '0',
+        }}/>
         {seccionComponent ?? <Navigate to="/workflow/tablas" />}
       </div>
     ) : (
