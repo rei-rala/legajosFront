@@ -43,7 +43,7 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
     return [solicitudesDia, solicitudesDia.length]
   }, [fullTBody])
 
-  const qSolicitudes =  Object.values(counters).reduce((acc, v) => acc + v, 0)
+  const qSolicitudes =  Object.values(counters).reduce((acc, v) => acc + v, 0) - counters.devueltas
 
   const [tablaInvertida, setTablaInvertida] = useState(false)
 
@@ -66,8 +66,8 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
                   <tr>
                     <th scope="row">Ingresar</th>
                     <th scope="row">Asignar</th>
-                    <th scope="row">Análisis</th>
                     <th scope="row">Pendientes</th>
+                    <th scope="row">Análisis</th>
                     <th scope="row">Supervisión</th>
                     <th scope="row">Devueltas</th>
                   </tr>
@@ -76,8 +76,8 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
                   <tr>
                     <td>{counters.ingresar}</td>
                     <td>{counters.asignar}</td>
-                    <td>{counters.analisis}</td>
                     <td>{counters.pendientes}</td>
+                    <td>{counters.analisis}</td>
                     <td>{counters.supervision}</td>
                     <td>{counters.devueltas}</td>
                   </tr>

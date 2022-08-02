@@ -64,7 +64,7 @@ const WfTablas: React.FC = () => {
         if (pass) {
           delete workflow[solCode]
         }
-        
+
         // Finalizado por GR pero falta bastanteo
         pass = exp[fechaFinalizadoGr]
         if (pass) {
@@ -373,7 +373,7 @@ const WfTablas: React.FC = () => {
   useEffect(() => {
     setCount({
       ingresar: Object.keys(ingresarTBody).length,
-      asignar: Object.keys(pendientesTBody).length,
+      asignar: Object.keys(asignarTBody).length,
 
       pendientes: Object.keys(pendientesTBody).length,
       analisis: Object.keys(analisisTBody).length,
@@ -381,7 +381,8 @@ const WfTablas: React.FC = () => {
 
       devueltas: Object.keys(devueltasTBody).length,
     })
-  }, [])
+
+  }, [completoTBody, ingresarTBody, asignarTBody, pendientesTBody, analisisTBody, supervisionTBody, devueltasTBody])
 
   const seccionComponent = useMemo(() => {
     if (!workflow) {
