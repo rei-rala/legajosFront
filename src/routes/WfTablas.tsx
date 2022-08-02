@@ -7,7 +7,7 @@ import { getWorkflowHeaders } from "../helpers";
 import moment, { Moment } from "../libs/moment";
 //import OpcionesTabla from "../components/OpcionesTabla/OpcionesTabla";
 
-const { canal, canalAlt, codigoSol, codigoSolAlt, codigoExp, estadoExp, razonSocial, fechaIngreso, fechaAsignadoAnalista, faltaInfo, faltaInfoDesde, faltaInfoHasta, asesorComercial, sucursal, analista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
+const { subcategoriaCanal, fechaFinalizadoGr, canal, canalAlt, codigoSol, codigoSolAlt, codigoExp, estadoExp, razonSocial, fechaIngreso, fechaAsignadoAnalista, faltaInfo, faltaInfoDesde, faltaInfoHasta, asesorComercial, sucursal, analista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
 
 
 function saveDateToSession(dateAsString: string) {
@@ -54,7 +54,28 @@ const WfTablas: React.FC = () => {
     let full: { [codigoSol: string | number]: Expediente } = {}
 
     for (const solCode in workflow) {
+      let pass = false;
       let sol = workflow[solCode]
+
+      // Pre verificacion si el expediente esta contiene "sucursal" (Garantia Sucursal)
+      sol.forEach(exp => {
+        let subcatLow = exp[subcategoriaCanal]?.toLowerCase()
+        pass = subcatLow.includes("sucursal")
+        if (pass) {
+          delete workflow[solCode]
+        }
+        
+        // Finalizado por GR pero falta bastanteo
+        pass = exp[fechaFinalizadoGr]
+        if (pass) {
+          delete workflow[solCode]
+        }
+      })
+
+      if (pass) {
+        continue
+      }
+
       for (const expCode of sol) {
 
         // Si no existe la solicitud en full, es creada con algunos valores ya unicos
@@ -79,7 +100,7 @@ const WfTablas: React.FC = () => {
       for (const expCode of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = !["Solicitud - Documentación Faltante y Pendiente de Aprobación"].includes((expCode[estadoExp] as string))
+        let estadoExpInvalido = !["Solicitud - Documentación Pendiente de Aprobación"].includes((expCode[estadoExp] as string))
 
         if (estadoExpInvalido) {
           continue;
@@ -120,9 +141,8 @@ const WfTablas: React.FC = () => {
         // Pre chequeos
         let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos"].includes((expCode[estadoExp] as string)) === false
         let analistaAsignado = !!expCode[analista];
-        let noEstaIngresado = !expCode[fechaIngreso];
 
-        if (estadoExpInvalido || analistaAsignado || noEstaIngresado) {
+        if (estadoExpInvalido || analistaAsignado) {
           continue;
         }
 
@@ -162,9 +182,11 @@ const WfTablas: React.FC = () => {
 
         // Pre chequeos
         let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false
-        let faltanteInfo = expCode[faltaInfo] !== 'Si';
+        let faltanteInfo = !expCode[faltaInfo];
+        let devuelto = !!expCode[fechaDevolucion];
+        let finalizado = !!expCode[fechaFinalizadoAnalista];
 
-        if (faltanteInfo || estadoExpInvalido) {
+        if (faltanteInfo || estadoExpInvalido || devuelto || finalizado) {
           continue;
         }
 
@@ -206,11 +228,12 @@ const WfTablas: React.FC = () => {
       for (const expCode of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false
-        let faltanteInfo = expCode[faltaInfo] === 'Si';
-        let faltanteAnalista = !expCode[analista] || expCode[analista] === '';
+        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false;
+        let faltanteInfo = expCode[faltaInfo];
+        let faltanteAnalista = !expCode[analista];
+        let finalizado = expCode[fechaFinalizadoAnalista];
 
-        if (faltanteInfo || faltanteAnalista || estadoExpInvalido) {
+        if (faltanteInfo || faltanteAnalista || estadoExpInvalido || finalizado) {
           continue;
         }
 
@@ -253,11 +276,11 @@ const WfTablas: React.FC = () => {
 
         // Pre chequeos
         let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false
-        let faltanteInfo = expCode[faltaInfo] === 'Si';
-        let faltanteAnalista = !expCode[analista] || expCode[analista] === '';
+        let faltanteInfo = expCode[faltaInfo];
+        let sinAsignar = !expCode[analista];
         let sinFinalizar = !expCode[fechaFinalizadoAnalista]
 
-        if (faltanteAnalista || estadoExpInvalido || faltanteInfo || sinFinalizar) {
+        if (estadoExpInvalido || faltanteInfo || sinAsignar || sinFinalizar) {
           continue;
         }
 
@@ -280,6 +303,7 @@ const WfTablas: React.FC = () => {
         tableBody[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
         tableBody[solCode][sucursal] = expCode[sucursal]
         tableBody[solCode][asesorComercial] = expCode[asesorComercial]
+        tableBody[solCode][fechaFinalizadoAnalista] = expCode[fechaFinalizadoAnalista]
         tableBody[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
         tableBody[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
         tableBody[solCode]["Días supervisión"] = dayFiltered.diff(moment(expCode[fechaFinalizadoAnalista], "DD/MM/YYYY"), 'days')

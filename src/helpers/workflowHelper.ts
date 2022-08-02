@@ -70,6 +70,7 @@ export function parseWorkflowData(workflowObject: Workflow) {
 }
 
 export async function parseWorkflow(workflow: string) {
+  const { sucursal: sucursalCol, subcategoriaCanal } = columnasWf
   const workflowArray = workflow.split("\n")
   let arrAux: string[][] = [];
   let workflowObject: Workflow = {}
@@ -110,15 +111,9 @@ export async function parseWorkflow(workflow: string) {
       continue;
     }
 
-    let sucursal = row[columnTitles.indexOf("Sucursal Garantizar")]
+    let sucursal = row[columnTitles.indexOf(sucursalCol)]
     if (sucursal.toLowerCase() === "digital") {
       continue;
-    }
-
-
-    let gtiaSucursal = row[columnTitles.indexOf("Canal Solicitud")]
-    if (gtiaSucursal.toLowerCase() === "garantía sucursal") {
-      continue
     }
 
     const rowObject: any = {}
@@ -196,6 +191,7 @@ export function getNivel(expediente: Expediente) {
   return found
 }
 
+// TODO: Make this work?
 export const getGrupoCanal = (expediente: Expediente) => {
   const { canal, canalAlt } = columnasWf
   let nivelColNames = [canal, canalAlt] || ["Grupo de Canal Análisis según SGA"]

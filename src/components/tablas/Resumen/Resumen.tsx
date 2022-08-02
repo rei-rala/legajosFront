@@ -57,7 +57,7 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
       <h3>Mostrando Resumen <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button></h3>
       <div className={styles.miniTabla}>
 
-
+        {/* TODO: Change order */}
         <table>
           {
             tablaInvertida
