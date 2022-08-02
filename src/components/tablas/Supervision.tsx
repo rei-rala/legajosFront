@@ -11,7 +11,7 @@ const validColumns = ["Días GR", "Días asignado", "Días pendiente", "Días su
 const Supervision: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
   useEffect(() => {
-    document.title = "Workflow | Tabla [En supervisión]";
+    document.title = "Workflow | Tabla: En supervisión";
   }, []);
 
   return (

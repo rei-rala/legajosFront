@@ -11,7 +11,7 @@ const validColumns = ["Días asignado", "Días pendiente", "Días devuelto", cod
 const Devueltas: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
   useEffect(() => {
-    document.title = "Workflow | Tabla [En análisis]";
+    document.title = "Workflow | Tabla: Devueltas";
   }, []);
 
   return (

@@ -4,7 +4,7 @@ import TablaGenerica from "./TablaGenerica/TablaGenerica";
 const Completo: React.FC<IWorkflowTable> = ({ tableBody, headers }) => {
 
   useEffect(() => {
-    document.title = "Workflow | Tabla completa [Resumen]";
+    document.title = "Workflow | Tabla completa";
   }, []);
 
   if (!headers || headers.length === 0) {

@@ -11,7 +11,7 @@ let validColumns = ["Días GR", fechaIngreso, codigoSol, /* codigoExp, */ estado
 const Asignar: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
   useEffect(() => {
-    document.title = "Workflow | Tabla [Asignar]";
+    document.title = "Workflow | Tabla: Asignar";
   }, []);
 
   return (

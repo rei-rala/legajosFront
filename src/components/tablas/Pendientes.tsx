@@ -11,7 +11,7 @@ const validColumns = ["Días GR", "Días asignado", "Días pendiente", codigoSol
 const Pendientes: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
   useEffect(() => {
-    document.title = "Workflow | Tabla [En análisis]";
+    document.title = "Workflow | Tabla: Pendientes";
   }, []);
 
   return (

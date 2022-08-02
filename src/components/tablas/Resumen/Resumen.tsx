@@ -43,9 +43,19 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
     return [solicitudesDia, solicitudesDia.length]
   }, [fullTBody])
 
-  const qSolicitudes =  Object.values(counters).reduce((acc, v) => acc + v, 0) - counters.devueltas
+  const qSolicitudes = Object.values(counters).reduce((acc, v) => acc + v, 0) - counters.devueltas
 
   const [tablaInvertida, setTablaInvertida] = useState(false)
+
+  const tablaConteo = {
+    "Ingresar": counters.ingresar,
+    "Asignar": counters.asignar,
+    "Pendientes": counters.pendientes,
+    "Análisis": counters.analisis,
+    "Supervisión": counters.supervision,
+    "Devueltas": counters.devueltas,
+  }
+
 
   useEffect(() => {
     document.title = "Workflow | Resumen";
@@ -57,29 +67,26 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
       <h3>Mostrando Resumen <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button></h3>
       <div className={styles.miniTabla}>
 
-        {/* TODO: Change order */}
         <table>
           {
             tablaInvertida
               ? (<>
                 <thead>
                   <tr>
-                    <th scope="row">Ingresar</th>
-                    <th scope="row">Asignar</th>
-                    <th scope="row">Pendientes</th>
-                    <th scope="row">Análisis</th>
-                    <th scope="row">Supervisión</th>
-                    <th scope="row">Devueltas</th>
+                    {
+                      Object.keys(tablaConteo).map((key) => (
+                        <th key={key} scope="col">{key}</th>
+                      ))
+                    }
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>{counters.ingresar}</td>
-                    <td>{counters.asignar}</td>
-                    <td>{counters.pendientes}</td>
-                    <td>{counters.analisis}</td>
-                    <td>{counters.supervision}</td>
-                    <td>{counters.devueltas}</td>
+                    {
+                      Object.values(tablaConteo).map((value, i) => (
+                        <td key={"resumen" + i}>{value}</td>
+                      ))
+                    }
                   </tr>
                 </tbody>
               </>)
@@ -91,30 +98,16 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Ingresar</td>
-                    <td>{counters.ingresar}</td>
-                  </tr>
-                  <tr>
-                    <td>Asignar</td>
-                    <td>{counters.asignar}</td>
-                  </tr>
-                  <tr>
-                    <td>Análisis</td>
-                    <td>{counters.analisis}</td>
-                  </tr>
-                  <tr>
-                    <td>Pendientes</td>
-                    <td>{counters.pendientes}</td>
-                  </tr>
-                  <tr>
-                    <td>Supervisión</td>
-                    <td>{counters.supervision}</td>
-                  </tr>
-                  <tr>
-                    <td>Devueltas</td>
-                    <td>{counters.devueltas}</td>
-                  </tr>
+                  {
+                    Object.entries(tablaConteo).map(([column, value]) => (
+                      <tr key={column}>
+                        <th scope="col">
+                          {column}
+                        </th>
+                        <td>{value}</td>
+                      </tr>
+                    ))
+                  }
                 </tbody>
               </>)
           }

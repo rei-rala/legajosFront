@@ -12,7 +12,7 @@ const EnAnalisis: React.FC<IWorkflowTable> = ({ tableBody }) => {
 
 
   useEffect(() => {
-    document.title = "Workflow | Tabla [En análisis]";
+    document.title = "Workflow | Tabla: En análisis";
   }, []);
 
   return (
