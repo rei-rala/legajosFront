@@ -5,27 +5,28 @@ import TablaGenerica from "../TablaGenerica/TablaGenerica";
 import moment, { Moment } from "../../../libs/moment";
 
 import styles from "./Resumen.module.css";
+import { useTablesWF } from "../../../context";
 
 interface Props {
-  counters: {
-    asignar: number;
-    devueltas: number;
-    analisis: number;
-    ingresar: number;
-    pendientes: number;
-    supervision: number;
-  },
   supervisionTBody: TableBody,
   analisisTBody: TableBody,
   fullTBody: TableBody,
 }
 
 
+
 const { canal, codigoSol, razonSocial, asesorComercial, sucursal, analista, fechaFinalizadoAnalista } = columnasWf
 const tablaSuperv = ["Días GR", "Días asignado", "Días pendiente", "Días finalizado", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista, fechaFinalizadoAnalista]
 const tablaAnalisis = ["Días GR", "Días asignado", "Días pendiente", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista]
 
-const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, fullTBody }) => {
+const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }) => {
+  const { fullCount } = useTablesWF()
+  const solicitudesTotal = Object.values(fullCount["total canal"]).reduce((acc, cur) => acc + cur, 0)
+
+
+  const [tablaInvertida, setTablaInvertida] = useState(false)
+  const [hideMiddle, setHideMiddle] = useState(false)
+
   const [dayFiltered, setDayFiltered] = useState<Moment>(moment());
 
   const [legajosIngresadosDia, cantidadLegajosIngresados] = useMemo(() => {
@@ -43,19 +44,6 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
     return [solicitudesDia, solicitudesDia.length]
   }, [fullTBody])
 
-  const qSolicitudes = Object.values(counters).reduce((acc, v) => acc + v, 0) - counters.devueltas
-
-  const [tablaInvertida, setTablaInvertida] = useState(false)
-
-  const tablaConteo = {
-    "Ingresar": counters.ingresar,
-    "Asignar": counters.asignar,
-    "Pendientes": counters.pendientes,
-    "Análisis": counters.analisis,
-    "Supervisión": counters.supervision,
-    "Devueltas": counters.devueltas,
-  }
-
 
   useEffect(() => {
     document.title = "Workflow | Resumen";
@@ -64,7 +52,9 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
 
   return (
     <div className={styles.resumen}>
-      <h3>Mostrando Resumen <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button></h3>
+      <h3>
+        Mostrando Resumen  <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button>  <button onClick={() => setHideMiddle(!hideMiddle)}>{hideMiddle ? "Mostrar" : "Ocultar"} intermedios</button>
+      </h3>
       <div className={styles.miniTabla}>
 
         <table>
@@ -74,17 +64,55 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
                 <thead>
                   <tr>
                     {
-                      Object.keys(tablaConteo).map((key) => (
-                        <th key={key} scope="col">{key}</th>
+                      !hideMiddle && <th scope="col">Canal</th>
+                    }
+                    {
+                      Object.keys(fullCount).map((key) => (
+                        <th key={"thCol" + key} scope="col">{hideMiddle && key === "total canal" ? "Total canales" : key}</th>
                       ))
                     }
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  {
+                    Object.keys(fullCount.asignar).map((canal, i) => {
+                      if (hideMiddle && !(i + 1 === Object.keys(fullCount).length)) {
+                        return null
+                      }
+
+                      return (
+                        <tr>
+                          <th
+                            key={"thRow" + canal}
+                            scope="row"
+                          >
+                            {canal}
+                          </th>
+                          {
+                            Object.keys(fullCount).map((estado, i) => {
+                              if (hideMiddle && !(i + 1 === Object.keys(fullCount).length)) {
+                                return null
+                              }
+                              return (
+                                <td
+                                  key={"td" + canal + estado}
+                                >
+                                  {fullCount[estado][canal] > 0 ? fullCount[estado][canal] : "-"}
+                                </td>
+                              )
+                            })
+                          }
+                        </tr>
+                      )
+                    })
+                  }
+                  <tr className={styles.lastRow}>
+                    {!hideMiddle && <th scope="row">Total Estado</th>}
                     {
-                      Object.values(tablaConteo).map((value, i) => (
-                        <td key={"resumen" + i}>{value}</td>
+                      Object.entries(fullCount).map(([estado, valores]) => (
+                        <th key={"lastThRow" + estado}>
+                          {Object.values(valores).reduce((acc, v) => acc + v, 0)}
+                        </th>
                       ))
                     }
                   </tr>
@@ -94,17 +122,36 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
                 <thead>
                   <tr>
                     <th scope="col">Estado</th>
-                    <th scope="col">Cantidad</th>
+                    {
+                      !hideMiddle && Object.keys(fullCount.ingresar).map((key) => (
+                        <th key={key} scope="col">{key}</th>
+                      ))
+                    }
+                    <th scope="col">{hideMiddle ? "Cantidad" : "Total estados"}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {
-                    Object.entries(tablaConteo).map(([column, value]) => (
-                      <tr key={column}>
+                    Object.keys(fullCount).map((column: string, index) => (
+                      <tr key={column} className={index + 1 === Object.keys(fullCount).length ? styles.lastRow : ""} >
                         <th scope="col">
                           {column}
                         </th>
-                        <td>{value}</td>
+                        {
+                          !hideMiddle && Object.keys(fullCount[column]).map((key) => <td
+                            key={key}
+                            className={index + 1 === Object.keys(fullCount).length ? styles.lastRow : ""}
+                          >
+                            {fullCount[column][key] > 0 ? fullCount[column][key] : "-"}
+                          </td>)
+                        }
+                        {
+                          <td>
+                            {
+                              Object.values(fullCount[column]).reduce((acc, v) => acc + v, 0)
+                            }
+                          </td>
+                        }
                       </tr>
                     ))
                   }
@@ -116,7 +163,7 @@ const Resumen: React.FC<Props> = ({ counters, supervisionTBody, analisisTBody, f
 
 
         <div>
-          <p>Contamos con {qSolicitudes} legajo{qSolicitudes > 1 && "s"} en riesgos </p>
+          <p>Contamos con {solicitudesTotal} legajo{solicitudesTotal > 1 && "s"} en riesgos </p>
           <p>El {dayFiltered.locale('es').format("dddd D [de] MMMM")} {cantidadLegajosIngresados === 0 ? "no hubo" : "hubo " + cantidadLegajosIngresados} ingresos</p>
         </div>
 

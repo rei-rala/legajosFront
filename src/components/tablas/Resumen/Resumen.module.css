@@ -15,6 +15,12 @@
   padding: 0.1rem 0.75rem;
 }
 
-.miniTabla button {
-  max-width: fit-content;
+.miniTabla th {
+  text-transform: capitalize;
+}
+
+.miniTabla tr:last-child,
+.miniTabla td:last-child {
+  font-weight: bold;
+  padding: 0.25rem
 }
