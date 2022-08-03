@@ -6,7 +6,7 @@ import { useTablesWF } from "../context/TablesWF";
 
 
 const WfTablas: React.FC = () => {
-  const { count, workflow, headers, completoTBody, ingresarTBody, asignarTBody, pendientesTBody, analisisTBody, supervisionTBody, devueltasTBody } = useTablesWF();
+  const { workflow, headers, completoTBody, ingresarTBody, asignarTBody, pendientesTBody, analisisTBody, supervisionTBody, devueltasTBody } = useTablesWF();
   const { seccion } = useParams()
 
   const seccionComponent = useMemo(() => {
@@ -31,7 +31,7 @@ const WfTablas: React.FC = () => {
       case "devueltas":
         return <Devueltas tableBody={devueltasTBody} />
       case "resumen":
-        return <Resumen counters={count} supervisionTBody={supervisionTBody} analisisTBody={analisisTBody} fullTBody={completoTBody} />
+        return <Resumen supervisionTBody={supervisionTBody} analisisTBody={analisisTBody} fullTBody={completoTBody} />
       default:
         return null
     }

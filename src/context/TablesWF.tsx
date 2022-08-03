@@ -1,27 +1,37 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import columnasWf from "../config";
 import { getWorkflowHeaders, retrieveLastDateFromSession, saveDateToSession } from "../helpers";
+import { getNivel } from "../helpers/workflowHelper";
 import moment, { Moment } from "../libs/moment";
 import { useWorkflow } from "./Workflow";
 
 const { subcategoriaCanal, fechaFinalizadoGr, canal, canalAlt, codigoSol, codigoSolAlt, codigoExp, estadoExp, razonSocial, fechaIngreso, fechaAsignadoAnalista, faltaInfo, faltaInfoDesde, faltaInfoHasta, asesorComercial, sucursal, analista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
 
-const countDefault = {
-  ingresar: -1,
-  asignar: -1,
-  pendientes: -1,
-  analisis: -1,
-  supervision: -1,
-  devueltas: -1,
+type Counter = {
+  [key: string]: number
+};
+
+
+// from canalenum
+const counterDefault: Counter = {
+  estandar: 0,
+  express: 0,
+  productivas: 0
 }
 
-type TableCount = {
-  ingresar: number,
-  asignar: number,
-  pendientes: number,
-  analisis: number,
-  supervision: number,
-  devueltas: number,
+
+const fullCounterDefault = {
+  ingresar: { ...counterDefault },
+  asignar: { ...counterDefault },
+  pendientes: { ...counterDefault },
+  analisis: { ...counterDefault },
+  supervision: { ...counterDefault },
+  devueltas: { ...counterDefault },
+  ["total canal"]: { ...counterDefault }
+}
+
+type FullCounter = {
+  [key: string]: Counter
 }
 
 type TableBody = {
@@ -31,7 +41,6 @@ type TableBody = {
 
 type TablesWFContextType = {
   workflow: Workflow | null,
-  count: TableCount,
   headers: string[],
   completoTBody: TableBody,
   ingresarTBody: TableBody,
@@ -40,11 +49,12 @@ type TablesWFContextType = {
   analisisTBody: TableBody,
   supervisionTBody: TableBody,
   devueltasTBody: TableBody,
+  fullCount: FullCounter
 }
 
+// Spread operation on default counters to avoid mutating an unique object
 export const TablesWF = createContext<TablesWFContextType>({
   workflow: null,
-  count: countDefault,
   headers: [],
   completoTBody: {},
   ingresarTBody: {},
@@ -53,13 +63,14 @@ export const TablesWF = createContext<TablesWFContextType>({
   analisisTBody: {},
   supervisionTBody: {},
   devueltasTBody: {},
+  fullCount: { ...fullCounterDefault }
 })
 
 type Props = { children: React.ReactNode }
 
 export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => {
   const { parsedWorkflow } = useWorkflow()
-  const [count, setCount] = useState<TableCount>(countDefault)
+  const [fullCount, setFullCount] = useState<FullCounter>({ ...fullCounterDefault })
 
   let [dayFiltered, setDayFiltered] = useState<Moment>(retrieveLastDateFromSession())
   const setDayHtml = (dayHtmlFormat: string) => {
@@ -97,14 +108,14 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         continue
       }
 
-      for (const expCode of sol) {
+      for (const exp of sol) {
 
         // Si no existe la solicitud en full, es creada con algunos valores ya unicos
         if (!full[solCode]) {
           full[solCode] = {}
         }
 
-        for (let [column, value] of Object.entries(expCode)) {
+        for (let [column, value] of Object.entries(exp)) {
           full[solCode][column] = value
         }
         break;
@@ -113,15 +124,16 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
     return full
   }, [workflow, headers, dayFiltered])
 
-  const ingresarTBody = useMemo(() => {
+  const [ingresarTBody, ingresarCount] = useMemo(() => {
     let ingresar: { [codigoSol: string | number]: Expediente } = {}
+    let ingCounter: Counter = { ...counterDefault }
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
-      for (const expCode of sol) {
+      for (const exp of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = !["Solicitud - Documentación Pendiente de Aprobación"].includes((expCode[estadoExp] as string))
+        let estadoExpInvalido = !["Solicitud - Documentación Pendiente de Aprobación"].includes((exp[estadoExp] as string))
 
         if (estadoExpInvalido) {
           continue;
@@ -134,78 +146,101 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         }
 
 
-        ingresar[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
-        ingresar[solCode][estadoExp] = expCode[estadoExp]
-        ingresar[solCode][razonSocial] = expCode[razonSocial]
-        ingresar[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
-        ingresar[solCode][sucursal] = expCode[sucursal]
-        ingresar[solCode][asesorComercial] = expCode[asesorComercial]
+        ingresar[solCode][codigoSol] = exp[codigoSol] ?? exp[codigoSolAlt]
+        ingresar[solCode][estadoExp] = exp[estadoExp]
+        ingresar[solCode][razonSocial] = exp[razonSocial]
+        ingresar[solCode][canal] = exp[canal] ?? exp[canalAlt]
+        ingresar[solCode][sucursal] = exp[sucursal]
+        ingresar[solCode][asesorComercial] = exp[asesorComercial]
+
+        // Contador de expedientes
+        let nivel = getNivel(exp)
+        if (nivel === "GP") {
+          ingCounter.productivas++
+        } else if (nivel === "EXP") {
+          ingCounter.express++
+        } else {
+          ingCounter.estandar++
+        }
+
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return ingresar
+    return [ingresar, ingCounter]
   }, [workflow, dayFiltered])
 
-  const asignarTBody = useMemo(() => {
+  const [asignarTBody, asignarCount] = useMemo(() => {
     let asignar: { [codigoSol: string | number]: Expediente } = {}
+    let asignarCounter: Counter = { ...counterDefault }
 
     if (!workflow) {
-      return asignar
+      return [asignar, asignarCounter]
     }
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
 
-
-      for (const expCode of sol) {
+      for (const exp of sol) {
         // Pre chequeos
-        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos"].includes((expCode[estadoExp] as string)) === false
-        let analistaAsignado = !!expCode[analista];
+        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos"].includes((exp[estadoExp] as string)) === false
+        let analistaAsignado = !!exp[analista];
 
         if (estadoExpInvalido || analistaAsignado) {
           continue;
         }
 
         // Validando nombres de columnas por si se cambia el workflow
-        let currSol = !!expCode[codigoSol] ? codigoSol : codigoSolAlt
-        let currCanal = !!expCode[canal] ? canal : canalAlt
+        let currSol = !!exp[codigoSol] ? codigoSol : codigoSolAlt
+        let currCanal = !!exp[canal] ? canal : canalAlt
 
         // Si no existe la solicitud en asignar, es creada con algunos valores ya unicos
         if (!asignar[solCode]) {
           asignar[solCode] = {}
         }
 
-        asignar[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        asignar[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
+        asignar[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        asignar[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
 
-        asignar[solCode][codigoSol] = expCode[currSol]
-        asignar[solCode][estadoExp] = expCode[estadoExp]
-        asignar[solCode][razonSocial] = expCode[razonSocial]
-        asignar[solCode][analista] = expCode[analista]
+        asignar[solCode][codigoSol] = exp[currSol]
+        asignar[solCode][estadoExp] = exp[estadoExp]
+        asignar[solCode][razonSocial] = exp[razonSocial]
+        asignar[solCode][analista] = exp[analista]
 
-        asignar[solCode][canal] = expCode[currCanal]
-        asignar[solCode][sucursal] = expCode[sucursal]
-        asignar[solCode][asesorComercial] = expCode[asesorComercial]
+        asignar[solCode][canal] = exp[currCanal]
+        asignar[solCode][sucursal] = exp[sucursal]
+        asignar[solCode][asesorComercial] = exp[asesorComercial]
+
+        // Contador de expedientes
+        let nivel = getNivel(exp)
+        if (nivel === "GP") {
+          asignarCounter.productivas++
+        } else if (nivel === "EXP") {
+          asignarCounter.express++
+        } else {
+          asignarCounter.estandar++
+        }
+
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return asignar
+    return [asignar, asignarCounter]
   }, [workflow, dayFiltered])
 
-  const pendientesTBody = useMemo(() => {
+  const [pendientesTBody, pendientesCount] = useMemo(() => {
     let pendientes: { [codigoSol: string | number]: Expediente } = {}
+    let pendientesCounter: Counter = { ...counterDefault }
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
-      for (const expCode of sol) {
+      for (const exp of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false
-        let faltanteInfo = !expCode[faltaInfo];
-        let devuelto = !!expCode[fechaDevolucion];
-        let finalizado = !!expCode[fechaFinalizadoAnalista];
+        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((exp[estadoExp] as string)) === false
+        let faltanteInfo = !exp[faltaInfo];
+        let devuelto = !!exp[fechaDevolucion];
+        let finalizado = !!exp[fechaFinalizadoAnalista];
 
         if (faltanteInfo || estadoExpInvalido || devuelto || finalizado) {
           continue;
@@ -218,41 +253,52 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         }
 
 
-        pendientes[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
-        pendientes[solCode][estadoExp] = expCode[estadoExp]
-        pendientes[solCode][razonSocial] = expCode[razonSocial]
-        pendientes[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        pendientes[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][codigoSol] = exp[codigoSol] ?? exp[codigoSolAlt]
+        pendientes[solCode][estadoExp] = exp[estadoExp]
+        pendientes[solCode][razonSocial] = exp[razonSocial]
+        pendientes[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][fechaAsignadoAnalista] = exp[fechaAsignadoAnalista] && moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
         pendientes[solCode][faltaInfo] = '-'
-        pendientes[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        pendientes[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        pendientes[solCode][analista] = expCode[analista]
-        pendientes[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
-        pendientes[solCode][sucursal] = expCode[sucursal]
-        pendientes[solCode][asesorComercial] = expCode[asesorComercial]
-        pendientes[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        pendientes[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        pendientes[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        pendientes[solCode][faltaInfoDesde] = exp[faltaInfoDesde] && moment(exp[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][faltaInfoHasta] = exp[faltaInfoHasta] && moment(exp[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        pendientes[solCode][analista] = exp[analista]
+        pendientes[solCode][canal] = exp[canal] ?? exp[canalAlt]
+        pendientes[solCode][sucursal] = exp[sucursal]
+        pendientes[solCode][asesorComercial] = exp[asesorComercial]
+        pendientes[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
+        pendientes[solCode]["Días asignado"] = dayFiltered.diff(moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        pendientes[solCode]["Días pendiente"] = exp[faltaInfoHasta] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+
+        // Contador de expedientes
+        let nivel = getNivel(exp)
+        if (nivel === "GP") {
+          pendientesCounter.productivas++
+        } else if (nivel === "EXP") {
+          pendientesCounter.express++
+        } else {
+          pendientesCounter.estandar++
+        }
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return pendientes
+    return [pendientes, pendientesCounter]
   }, [workflow, dayFiltered])
 
-  const analisisTBody = useMemo(() => {
+  const [analisisTBody, analisisCount] = useMemo(() => {
     let analisis: { [codigoSol: string | number]: Expediente } = {}
+    let analisisCounter: Counter = { ...counterDefault }
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
-      for (const expCode of sol) {
+      for (const exp of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false;
-        let faltanteInfo = expCode[faltaInfo];
-        let faltanteAnalista = !expCode[analista];
-        let finalizado = expCode[fechaFinalizadoAnalista];
+        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((exp[estadoExp] as string)) === false;
+        let faltanteInfo = exp[faltaInfo];
+        let faltanteAnalista = !exp[analista];
+        let finalizado = exp[fechaFinalizadoAnalista];
 
         if (faltanteInfo || faltanteAnalista || estadoExpInvalido || finalizado) {
           continue;
@@ -265,91 +311,113 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         }
 
 
-        analisis[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
-        analisis[solCode][estadoExp] = expCode[estadoExp]
-        analisis[solCode][razonSocial] = expCode[razonSocial]
-        analisis[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        analisis[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][codigoSol] = exp[codigoSol] ?? exp[codigoSolAlt]
+        analisis[solCode][estadoExp] = exp[estadoExp]
+        analisis[solCode][razonSocial] = exp[razonSocial]
+        analisis[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][fechaAsignadoAnalista] = exp[fechaAsignadoAnalista] && moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
         analisis[solCode][faltaInfo] = '-'
-        analisis[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        analisis[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        analisis[solCode][analista] = expCode[analista]
-        analisis[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
-        analisis[solCode][sucursal] = expCode[sucursal]
-        analisis[solCode][asesorComercial] = expCode[asesorComercial]
-        analisis[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        analisis[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        analisis[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        analisis[solCode][faltaInfoDesde] = exp[faltaInfoDesde] && moment(exp[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][faltaInfoHasta] = exp[faltaInfoHasta] && moment(exp[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        analisis[solCode][analista] = exp[analista]
+        analisis[solCode][canal] = exp[canal] ?? exp[canalAlt]
+        analisis[solCode][sucursal] = exp[sucursal]
+        analisis[solCode][asesorComercial] = exp[asesorComercial]
+        analisis[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
+        analisis[solCode]["Días asignado"] = dayFiltered.diff(moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        analisis[solCode]["Días pendiente"] = exp[faltaInfoHasta] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+
+        // Contador de expedientes
+        let nivel = getNivel(exp)
+        if (nivel === "GP") {
+          analisisCounter.productivas++
+        } else if (nivel === "EXP") {
+          analisisCounter.express++
+        } else {
+          analisisCounter.estandar++
+        }
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return analisis
+    return [analisis, analisisCounter]
   }, [workflow, dayFiltered])
 
-  const supervisionTBody = useMemo(() => {
-    let tableBody: { [codigoSol: string | number]: Expediente } = {}
+  const [supervisionTBody, supervisionCount] = useMemo(() => {
+    let supervision: { [codigoSol: string | number]: Expediente } = {}
+    let supervisionCounter: Counter = { ...counterDefault }
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
-      for (const expCode of sol) {
+      for (const exp of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false
-        let faltanteInfo = expCode[faltaInfo];
-        let sinAsignar = !expCode[analista];
-        let sinFinalizar = !expCode[fechaFinalizadoAnalista]
+        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((exp[estadoExp] as string)) === false
+        let faltanteInfo = exp[faltaInfo];
+        let sinAsignar = !exp[analista];
+        let sinFinalizar = !exp[fechaFinalizadoAnalista]
 
         if (estadoExpInvalido || faltanteInfo || sinAsignar || sinFinalizar) {
           continue;
         }
 
 
-        // Si no existe la solicitud en tableBody, es creada con algunos valores ya unicos
-        if (!tableBody[solCode]) {
-          tableBody[solCode] = {}
+        // Si no existe la solicitud en supervision, es creada con algunos valores ya unicos
+        if (!supervision[solCode]) {
+          supervision[solCode] = {}
         }
 
 
-        tableBody[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
-        tableBody[solCode][estadoExp] = expCode[estadoExp]
-        tableBody[solCode][razonSocial] = expCode[razonSocial]
-        tableBody[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][fechaFinalizadoAnalista] = expCode[fechaFinalizadoAnalista] && moment(expCode[fechaFinalizadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        tableBody[solCode][analista] = expCode[analista]
-        tableBody[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
-        tableBody[solCode][sucursal] = expCode[sucursal]
-        tableBody[solCode][asesorComercial] = expCode[asesorComercial]
-        tableBody[solCode][fechaFinalizadoAnalista] = expCode[fechaFinalizadoAnalista]
-        tableBody[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días supervisión"] = dayFiltered.diff(moment(expCode[fechaFinalizadoAnalista], "DD/MM/YYYY"), 'days')
-        tableBody[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        supervision[solCode][codigoSol] = exp[codigoSol] ?? exp[codigoSolAlt]
+        supervision[solCode][estadoExp] = exp[estadoExp]
+        supervision[solCode][razonSocial] = exp[razonSocial]
+        supervision[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        supervision[solCode][fechaAsignadoAnalista] = exp[fechaAsignadoAnalista] && moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        supervision[solCode][faltaInfoDesde] = exp[faltaInfoDesde] && moment(exp[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        supervision[solCode][faltaInfoHasta] = exp[faltaInfoHasta] && moment(exp[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        supervision[solCode][fechaFinalizadoAnalista] = exp[fechaFinalizadoAnalista] && moment(exp[fechaFinalizadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        supervision[solCode][analista] = exp[analista]
+        supervision[solCode][canal] = exp[canal] ?? exp[canalAlt]
+        supervision[solCode][sucursal] = exp[sucursal]
+        supervision[solCode][asesorComercial] = exp[asesorComercial]
+        supervision[solCode][fechaFinalizadoAnalista] = exp[fechaFinalizadoAnalista]
+        supervision[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
+        supervision[solCode]["Días asignado"] = dayFiltered.diff(moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        supervision[solCode]["Días supervisión"] = dayFiltered.diff(moment(exp[fechaFinalizadoAnalista], "DD/MM/YYYY"), 'days')
+        supervision[solCode]["Días pendiente"] = exp[faltaInfoHasta] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+
+        // Contador de expedientes
+        let nivel = getNivel(exp)
+        if (nivel === "GP") {
+          supervisionCounter.productivas++
+        } else if (nivel === "EXP") {
+          supervisionCounter.express++
+        } else {
+          supervisionCounter.estandar++
+        }
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
 
-    return tableBody
+    return [supervision, supervisionCounter]
   }, [workflow, dayFiltered])
 
 
-  const devueltasTBody = useMemo(() => {
+  const [devueltasTBody, devueltasCount] = useMemo(() => {
     let devueltas: { [codigoSol: string | number]: Expediente } = {}
+    let devueltasCounter: Counter = { ...counterDefault }
 
     for (const solCode in workflow) {
       let sol = workflow[solCode]
-      for (const expCode of sol) {
+      for (const exp of sol) {
 
         // Pre chequeos
-        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((expCode[estadoExp] as string)) === false
-        let faltanteInfo = expCode[faltaInfo] !== 'Si';
-        let noEstaDevuelto = expCode[fechaDevolucion] == null
+        let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((exp[estadoExp] as string)) === false
+        let faltanteInfo = exp[faltaInfo] !== 'Si';
+        let noEstaDevuelto = exp[fechaDevolucion] == null
 
         if (faltanteInfo || estadoExpInvalido || noEstaDevuelto) {
           continue;
@@ -362,43 +430,57 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         }
 
 
-        devueltas[solCode][codigoSol] = expCode[codigoSol] ?? expCode[codigoSolAlt]
-        devueltas[solCode][estadoExp] = expCode[estadoExp]
-        devueltas[solCode][razonSocial] = expCode[razonSocial]
-        devueltas[solCode][fechaIngreso] = expCode[fechaIngreso] && moment(expCode[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
-        devueltas[solCode][fechaAsignadoAnalista] = expCode[fechaAsignadoAnalista] && moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][codigoSol] = exp[codigoSol] ?? exp[codigoSolAlt]
+        devueltas[solCode][estadoExp] = exp[estadoExp]
+        devueltas[solCode][razonSocial] = exp[razonSocial]
+        devueltas[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][fechaAsignadoAnalista] = exp[fechaAsignadoAnalista] && moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
         devueltas[solCode][faltaInfo] = '-'
-        devueltas[solCode][faltaInfoDesde] = expCode[faltaInfoDesde] && moment(expCode[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
-        devueltas[solCode][faltaInfoHasta] = expCode[faltaInfoHasta] && moment(expCode[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
-        devueltas[solCode][analista] = expCode[analista]
-        devueltas[solCode][canal] = expCode[canal] ?? expCode[canalAlt]
-        devueltas[solCode][sucursal] = expCode[sucursal]
-        devueltas[solCode][asesorComercial] = expCode[asesorComercial]
-        devueltas[solCode]["Días GR"] = dayFiltered.diff(moment(expCode[fechaIngreso], "DD/MM/YYYY"), 'days')
-        devueltas[solCode]["Días asignado"] = dayFiltered.diff(moment(expCode[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        devueltas[solCode]["Días pendiente"] = expCode[faltaInfoHasta] ? moment(expCode[faltaInfoHasta], "DD/MM/YYYY").diff(moment(expCode[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+        devueltas[solCode][faltaInfoDesde] = exp[faltaInfoDesde] && moment(exp[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][faltaInfoHasta] = exp[faltaInfoHasta] && moment(exp[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
+        devueltas[solCode][analista] = exp[analista]
+        devueltas[solCode][canal] = exp[canal] ?? exp[canalAlt]
+        devueltas[solCode][sucursal] = exp[sucursal]
+        devueltas[solCode][asesorComercial] = exp[asesorComercial]
+        devueltas[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
+        devueltas[solCode]["Días asignado"] = dayFiltered.diff(moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
+        devueltas[solCode]["Días pendiente"] = exp[faltaInfoHasta] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : '-'
+
+        // Contador de expedientes
+        let nivel = getNivel(exp)
+        if (nivel === "GP") {
+          devueltasCounter.productivas++
+        } else if (nivel === "EXP") {
+          devueltasCounter.express++
+        } else {
+          devueltasCounter.estandar++
+        }
 
         // Por ahora solo tomaremos un expediente
         break;
       }
     }
-    return devueltas
+    return [devueltas, devueltasCounter]
   }, [workflow, dayFiltered])
 
+
+  // updating fullcount
   useEffect(() => {
-    setCount({
-      ingresar: Object.keys(ingresarTBody).length,
-      asignar: Object.keys(asignarTBody).length,
-
-      pendientes: Object.keys(pendientesTBody).length,
-      analisis: Object.keys(analisisTBody).length,
-      supervision: Object.keys(supervisionTBody).length,
-
-      devueltas: Object.keys(devueltasTBody).length,
+    setFullCount({
+      ...fullCount,
+      ingresar: ingresarCount,
+      asignar: asignarCount,
+      pendientes: pendientesCount,
+      analisis: analisisCount,
+      supervision: supervisionCount,
+      devueltas: devueltasCount,
+      ["total canal"]: {
+        estandar: ingresarCount.estandar + asignarCount.estandar + pendientesCount.estandar + analisisCount.estandar + supervisionCount.estandar + devueltasCount.estandar,
+        express: ingresarCount.express + asignarCount.express + pendientesCount.express + analisisCount.express + supervisionCount.express + devueltasCount.express,
+        productivas: ingresarCount.productivas + asignarCount.productivas + pendientesCount.productivas + analisisCount.productivas + supervisionCount.productivas + devueltasCount.productivas,
+      }
     })
-
-  }, [completoTBody, ingresarTBody, asignarTBody, pendientesTBody, analisisTBody, supervisionTBody, devueltasTBody])
-
+  }, [supervisionCount, devueltasCount])
 
   return (
     <TablesWF.Provider value={{
@@ -411,8 +493,7 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
       analisisTBody,
       supervisionTBody,
       devueltasTBody,
-
-      count,
+      fullCount,
     }}>
       {children}
     </TablesWF.Provider>

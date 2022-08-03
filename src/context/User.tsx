@@ -52,10 +52,6 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
   }
 
   useEffect(() => {
-    console.log(preferences.analistaSectionHide)
-  }, [preferences.analistaSectionHide])
-
-  useEffect(() => {
     preferences.sectionMaxWidth
       ? document.body.classList.add("ignoreSectionMaxWidth")
       : document.body.classList.remove("ignoreSectionMaxWidth")

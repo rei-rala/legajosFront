@@ -176,10 +176,10 @@ export function getNivel(expediente: Expediente) {
     }
   }
 
-  if (found.includes("expr")) {
-    return "EXP"
-  } else if (found.includes("productivas")) {
+  if (found.includes("productivas")) {
     return "GP"
+  } else if (found.includes("expr")) {
+    return "EXP"
   } else if (found.includes("2")) {
     return "N2"
   } else if (found.includes("1")) {
@@ -198,7 +198,6 @@ export const getGrupoCanal = (expediente: Expediente) => {
 
   let found = "n/a";
   for (let col of nivelColNames) {
-    console.log(col)
   }
 }
 
