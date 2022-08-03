@@ -10,13 +10,16 @@ export type AnalistaSectionHide = {
 type UserContextType = {
   preferences: {
     sectionMaxWidth: boolean,
-    analistaSectionHide: AnalistaSectionHide
+    analistaSectionHide: AnalistaSectionHide,
+    hideHoverInfo: boolean,
   },
   toggleAnalistaHide: (section: keyof AnalistaSectionHide) => void,
+  toggleHoverInfo: () => void,
 }
 
 export const User = createContext<UserContextType>({
   preferences: {
+    hideHoverInfo: false,
     sectionMaxWidth: true,
     analistaSectionHide: {
       analisis: false,
@@ -26,6 +29,7 @@ export const User = createContext<UserContextType>({
     }
   },
   toggleAnalistaHide: () => { },
+  toggleHoverInfo: () => { },
 })
 
 type Props = { children: React.ReactNode }
@@ -33,6 +37,7 @@ type Props = { children: React.ReactNode }
 export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
   const [preferences, setPreferences] = useState({
     sectionMaxWidth: true,
+    hideHoverInfo: false,
     analistaSectionHide: {
       pendiente: false,
       analisis: false,
@@ -51,6 +56,13 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
     })
   }
 
+  function toggleHoverInfo() {
+    setPreferences({
+      ...preferences,
+      hideHoverInfo: !preferences.hideHoverInfo
+    })
+  }
+
   useEffect(() => {
     preferences.sectionMaxWidth
       ? document.body.classList.add("ignoreSectionMaxWidth")
@@ -61,6 +73,7 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
     <User.Provider value={{
       preferences,
       toggleAnalistaHide,
+      toggleHoverInfo,
     }}>
       {children}
     </User.Provider>

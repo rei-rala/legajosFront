@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import columnasWf from "../../../config";
-import { useWorkflow } from "../../../context";
+import { useUser, useWorkflow } from "../../../context";
 import HoverHandler from "../../HoverHandler/HoverHandler";
 import styles from "./TablaGenerica.module.css";
 
+type TableOrder = {
+  columnName: string;
+  order: "asc" | "desc";
+}
 interface props {
   headers: string[],
   tableBody: {
@@ -17,6 +21,17 @@ const { razonSocial, codigoSol, codigoSolAlt, estadoExp, canal, canalAlt, analis
 
 const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
   const { parsedWorkflow } = useWorkflow()
+  const { toggleHoverInfo, preferences: { hideHoverInfo } } = useUser()
+  const [data, setData] = useState(Object.values(tableBody))
+
+  const [sortedBy, setSortedBy] = useState<TableOrder>({ columnName: "", order: "desc", })
+  const changeOrder = (columnName: string) => {
+    setSortedBy({
+      columnName,
+      order: sortedBy.columnName === columnName ? sortedBy.order !== "desc" ? "desc" : "asc" : 'asc',
+    })
+  }
+
   const [hovered, setHovered] = useState<Expediente[] | undefined>(undefined)
 
   const cantidadSol = Object.values(tableBody).length
@@ -24,11 +39,50 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
   let doubledSizedCols = [estadoExp, analista, asesorComercial]
   let maxSizedCol = [razonSocial]
 
+  function mouseEnterLeaveHandler(expediente?: Expediente) {
+    if (hideHoverInfo) return
+
+    if (!expediente) {
+      setHovered(undefined)
+      return
+    }
+
+    if (parsedWorkflow) {
+      let hoveredSolicitud = (expediente[codigoSol] || expediente[codigoSolAlt])
+      setHovered(parsedWorkflow[hoveredSolicitud])
+    }
+  }
+
+
+  useEffect(() => {
+    Promise.resolve([])
+      .then((d) => setData(d))
+      .then(() => data.sort((a, b) => {
+        let aVal = a[sortedBy.columnName] ?? "*"
+        let bVal = b[sortedBy.columnName] ?? "*"
+        if (sortedBy.order === "asc") {
+          return aVal > bVal ? 1 : -1
+        } else {
+          return aVal < bVal ? 1 : -1
+        }
+      }))
+      .then((d) => setData(d))
+  }, [sortedBy])
+
+  useEffect(() => {
+    setSortedBy({
+      columnName: headers[0],
+      order: "desc",
+    })
+  }, [headers])
+
   return (
     <>
       <i>{cantidadSol} solicitud{cantidadSol !== 1 && "es"} </i>
+      <button onClick={toggleHoverInfo}>{hideHoverInfo ? "Mostrar" : "Ocultar"}</button>
 
       <HoverHandler data={hovered} />
+
 
       <div className={styles.tableContainer}>
         <table>
@@ -37,18 +91,28 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
               {headers.map((header, index) => <th
                 key={index}
                 className={maxSizedCol.includes(header) ? styles.maxSized : doubledSizedCols.includes(header) ? styles.minSized : styles.normal}
-              >{header}</th>)}
+              >
+                <span
+                  onClick={() => changeOrder(header)}
+                  className={styles.tableSorter}
+                >
+                  {header}
+                  {
+                    sortedBy.columnName === header &&
+                    <span className={styles.sortIcon}>
+                      {sortedBy.order === "asc" ? "▲" : "▼"}
+                    </span>
+                  }
+                </span>
+              </th>)}
             </tr>
           </thead>
           <tbody>
             {
-              Object.values(tableBody).map((exp, index) => <tr
+              data.map((exp, index) => <tr
                 key={index}
-                onMouseEnter={() => {
-                  let hoveredSolicitud = (exp[codigoSol] || exp[codigoSolAlt])
-                  parsedWorkflow && setHovered(parsedWorkflow[hoveredSolicitud])
-                }}
-                onMouseLeave={() => setHovered(undefined)}
+                onMouseEnter={() => mouseEnterLeaveHandler(exp)}
+                onMouseLeave={() => mouseEnterLeaveHandler(undefined)}
               >
                 {
                   headers.map((value, index) => <td key={index} >

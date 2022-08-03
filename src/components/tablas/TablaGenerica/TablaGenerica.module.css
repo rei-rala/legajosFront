@@ -9,6 +9,11 @@
   border-top: none;
 }
 
+.tableContainer th {
+  padding: 0.5rem;
+  text-align: center;
+}
+
 .normal {
   min-width: 4rem;
 }
@@ -19,4 +24,15 @@
 
 .maxSized {
   min-width: 20rem;
+}
+
+.tableSorter {
+  cursor: pointer;
+}
+
+.tableSorter .sortIcon {
+  background-color: transparent;
+  color: white;
+  border: none;
+  margin-left: 0.5rem;
 }
