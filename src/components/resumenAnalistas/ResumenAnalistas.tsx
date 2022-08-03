@@ -1,24 +1,23 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import columnasWf from "../../config";
-import { useWorkflow } from "../../context";
+import { useUser, useWorkflow } from "../../context";
+import { AnalistaSectionHide } from "../../context/User";
 import HoverHandler from "../HoverHandler/HoverHandler";
 import CuadroAnalista from "./cuadroAnalista/CuadroAnalista";
 import CuadroAnalistaHidden from "./CuadroAnalistaHidden/CuadroAnalistaHidden";
 import styles from "./ResumenAnalistas.module.css";
 
-type AnalistaCuadro = {
-  nombre: string;
-  isHiding: boolean,
-  solicitudes: any[];
-}
 
 const { analista: analistaColumn, fechaIngreso: fechaIngresoColumn } = columnasWf
 
 const ResumenAnalistas: React.FC = () => {
   const { parsedWorkflow } = useWorkflow()
+  const { preferences: userPreferences, toggleAnalistaHide } = useUser()
+  const { analistaSectionHide } = userPreferences
+
   const [renderCount, setRenderCount] = useState(0)
-  const [currentHover, setCurrentHover] = useState<string | number | undefined>(undefined)
+  const [currentHover, setCurrentHover] = useState<Expediente[] | undefined>(undefined)
 
   const analistas: AnalistaCuadro[] = useMemo(getAnalistas, [parsedWorkflow, renderCount])
 
@@ -80,6 +79,18 @@ const ResumenAnalistas: React.FC = () => {
     <div>
       <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
       <h2>Cuadro de Analistas</h2><br />
+      <div className={styles.filtrosContainer}>
+        <h5>FILTROS</h5>
+        <div>
+          {
+            Object.entries(analistaSectionHide).map(([key, value]) => <label key={"filter" + key}>
+              <input type="checkbox" checked={!value} onChange={() => toggleAnalistaHide(key as keyof AnalistaSectionHide)} />
+              {key}
+            </label>)
+          }
+
+        </div>
+      </div>
       <HoverHandler data={currentHover} />
       <div className={styles.analistasContainer}>
         {

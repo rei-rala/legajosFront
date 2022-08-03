@@ -13,3 +13,19 @@
 .analistasContainer_hide > div {
   opacity: 0.5;
 }
+
+.filtrosContainer {
+  margin-bottom: 1rem; 
+}
+
+.filtrosContainer div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.filtrosContainer label {
+  cursor: pointer;
+  text-transform: capitalize;
+}

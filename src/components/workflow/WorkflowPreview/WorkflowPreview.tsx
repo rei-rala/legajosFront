@@ -15,7 +15,7 @@ const WorkflowPreview: React.FC = () => {
   }
 
   if (redirect) {
-    return <Navigate to="/workflow/resumen" />
+    return <Navigate to="/workflow/tablas/resumen" />
   }
 
   return <form>

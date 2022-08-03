@@ -14,15 +14,21 @@ type PreviewWorkflow = {
   valuesExpExample: string[],
 }
 
+type AnalistaCuadro = {
+  nombre: string;
+  isHiding: boolean,
+  solicitudes: Expediente[][];
+}
+
 interface ICuadroAnalistaProps {
   analista: string;
-  solicitudes: { [codSolicitud: string | number]: any }
+  solicitudes: Expediente[][]
   isShowing?: boolean;
   handleHide: (e: React.ChangeEvent<HTMLInputElement>, nombreAnalista: string) => void;
 }
 
 interface ICuadroAnalistaShowingProps extends ICuadroAnalistaProps {
-  showDetail: (codSolicitud: string | number | undefined) => void;
+  showDetail: (solicitud: Expediente[] | undefined) => void;
 }
 
 type TableBody = {

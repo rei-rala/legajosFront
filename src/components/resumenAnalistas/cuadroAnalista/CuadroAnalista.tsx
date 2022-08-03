@@ -1,10 +1,12 @@
 import React from "react";
 import columnasWf from "../../../config";
+import { useUser } from "../../../context";
 import { getImporteSolicitud, getLineaExpediente, getNivel } from "../../../helpers/workflowHelper";
 import styles from "./CuadroAnalista.module.css";
 
+const { faltaInfo, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
+
 export function getEstadoStyle(solicitud: Expediente[]) {
-  const { fechaDevolucion, faltaInfo, fechaFinalizadoAnalista } = columnasWf
 
   let isDevuelto = solicitud[0][fechaDevolucion]
 
@@ -22,15 +24,12 @@ export function getEstadoStyle(solicitud: Expediente[]) {
   if (faltanteInfo) {
     return styles.isFaltaInfo
   }
-
-
 }
+
 
 const CuadroAnalista: React.FC<ICuadroAnalistaShowingProps> = ({ analista, solicitudes, showDetail, handleHide }) => {
   const { razonSocial: razonSolCol } = columnasWf
-
-  // desastre right? 
-  // quedo safable
+  const { analisis, devuelto, finalizado, pendiente } = useUser().preferences.analistaSectionHide
 
   return (
     <div
@@ -41,19 +40,45 @@ const CuadroAnalista: React.FC<ICuadroAnalistaShowingProps> = ({ analista, solic
       <ol className={styles.analistaBox_content}>
         {
           Object.entries(solicitudes).map(([solicitud, expedientes]) => {
+            let omit = false;
+            
+            if (devuelto) {
+              omit = expedientes.some((expediente) => expediente[fechaDevolucion])
+            }
+
+            if (!omit && pendiente) {
+              omit = !expedientes.some((expediente) => expediente[fechaDevolucion]) && expedientes.some((expediente) => expediente[faltaInfo])
+            }
+
+            if (!omit && finalizado) {
+              omit = expedientes.some((expediente) => expediente[fechaFinalizadoAnalista])
+            }
+
+
+            if (!omit && analisis) {
+              let p = !expedientes.some((expediente) => expediente[faltaInfo])
+              let f = !expedientes.some((expediente) => expediente[fechaFinalizadoAnalista])
+              let d = !expedientes.some((expediente) => expediente[fechaDevolucion])
+
+              omit = p && f && d
+            }
+
+
+            if (omit) {
+              return null;
+            }
+
             const razonSocial = expedientes[0][razonSolCol] ? expedientes[0][razonSolCol] : solicitud
-            // TODO: FIX este desastre
+            // TODO: arreglar este desastre
             return <li key={solicitud}
               onMouseEnter={() => showDetail(expedientes)}
               onMouseLeave={() => showDetail(undefined)}
             >
               <details>
-                {/* TODO: Title on hover */}
                 <summary><span className={getEstadoStyle(expedientes)}>{razonSocial}</span> <strong>{getNivel(expedientes[0])}</strong></summary>
 
                 <ul>
                   {
-                    /* TODO: Title on hover */
                     expedientes.map((expediente: any) => <li key={solicitud + "-" + expediente.Expediente}>
                       <b>{getLineaExpediente(expediente)}</b>
                       <span>{getImporteSolicitud(expediente)}</span>
