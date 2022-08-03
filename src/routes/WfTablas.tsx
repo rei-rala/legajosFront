@@ -61,13 +61,13 @@ const WfTablas: React.FC = () => {
       <div>
         <h1>Tabla resumen</h1>
         <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
-        <hr style={{
-          marginBottom: '0',
-        }} />
         <div
           style={{
             display: 'flex',
             justifyContent: 'center',
+            gap: "0.5rem",
+            marginTop: '1rem',
+            marginBottom: '1rem'
           }}
         >
           {
@@ -78,8 +78,9 @@ const WfTablas: React.FC = () => {
                 key={key}
                 style={({ isActive }) => ({
                   padding: "0.5rem",
-                  background: isActive ? 'var(--color-primary)' : '',
+                  background: isActive ? '#00A86B' : '',
                   color: isActive ? 'white' : '',
+                  borderRadius: '0.5rem',
                 })}
               >
                 {rutas[key]}
@@ -87,9 +88,7 @@ const WfTablas: React.FC = () => {
             })
           }
         </div>
-        <hr style={{
-          marginTop: '0',
-        }} />
+
         {seccionComponent ?? <Navigate to="/workflow/tablas" />}
       </div>
     ) : (
