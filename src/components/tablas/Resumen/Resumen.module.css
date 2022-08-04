@@ -25,6 +25,11 @@
   padding: 0.25rem;
 }
 
+.normal tbody :is(tr:first-child, tr:nth-last-child(2)) :is(th, td),
+.invertida tbody :is(tr :is(th, td):nth-child(2), tr :is(th, td):nth-last-child(2)) {
+  opacity: 0.5;
+}
+
 .filterWrapper {
   position: fixed;
   left: 50vw;

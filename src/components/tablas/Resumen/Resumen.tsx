@@ -87,7 +87,7 @@ const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }
       <h3>
         Mostrando Resumen  <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button>  <button onClick={() => setHideMiddle(!hideMiddle)}>Ocultar intermedios</button>
       </h3>
-      <div className={styles.miniTabla}>
+      <div className={styles.miniTabla + " " + (tablaInvertida ? styles.invertida : styles.normal)}>
         <table>
           {
             tablaInvertida
