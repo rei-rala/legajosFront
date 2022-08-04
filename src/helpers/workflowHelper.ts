@@ -156,14 +156,6 @@ export function getWorkflowHeaders(workflow: Workflow | null) {
   return headers
 }
 
-
-export function getCanalGr(expediente: Expediente) {
-  const { canalGr } = columnasWf
-
-  return expediente[canalGr]
-}
-
-
 export function getNivel(expediente: Expediente) {
   const { canal, canalAlt } = columnasWf
   let nivelColNames = [canal, canalAlt] || ["Grupo de Canal Análisis según SGA"]
@@ -189,6 +181,20 @@ export function getNivel(expediente: Expediente) {
   }
 
   return found
+}
+
+export function getCanalGr(expediente: Expediente) {
+  let nivel = getNivel(expediente)
+
+  switch (nivel) {
+    case "GP":
+      return "GP"
+    case "EXP":
+      return "Express"
+    default:
+      return "Estándar"
+  }
+
 }
 
 // TODO: Make this work?

@@ -70,3 +70,11 @@ export function retrieveLastDateFromSession() {
   }
   return asMoment
 }
+
+
+export function shortenString(str: string, maxLength: number = 40) {
+  if (str.length > maxLength) {
+    return str.substring(0, maxLength) + "..."
+  }
+  return str
+}

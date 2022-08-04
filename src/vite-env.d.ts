@@ -4,6 +4,8 @@ interface ImportMetaEnv {
   readonly VITE_WF_DATE_COLUMNS: string
   readonly VITE_WF_FLOAT_COLUMNS: string
   
+  readonly VITE_WF_COD_EMPRESA: string
+
   readonly VITE_WF_COD_SOLI_COLS: string
   readonly VITE_WF_COD_SOLI_ALT_COL: string
   readonly VITE_WF_COD_EXPE_COLS: string

@@ -2,14 +2,16 @@ const columnasWf = {
   date: import.meta.env.VITE_WF_DATE_COLUMNS.split("|") ?? [],
   float: import.meta.env.VITE_WF_FLOAT_COLUMNS.split("|") ?? [],
 
+  codEmpresa: import.meta.env.VITE_WF_COD_EMPRESA ?? "",
+
   codigoSol: import.meta.env.VITE_WF_COD_SOLI_COLS ?? "",
   codigoSolAlt: import.meta.env.VITE_WF_COD_SOLI_ALT_COL ?? "",
   codigoExp: import.meta.env.VITE_WF_COD_EXPE_COLS ?? "",
   estadoExp: import.meta.env.VITE_WF_EST_EXPE_COLS ?? "",
   fechaSolicitud: import.meta.env.VITE_WF_SOLICITUD_FECHA_COL ?? "",
-  canalGr: import.meta.env.VITE_WF_CANAL_RIESGOS_COLS ?? "", 
+  canalGr: import.meta.env.VITE_WF_CANAL_RIESGOS_COLS ?? "",
   canal: import.meta.env.VITE_WF_CANAL_COLS ?? "",
-  canalAlt: import.meta.env.VITE_WF_CANAL_ALT_COLS ?? "", 
+  canalAlt: import.meta.env.VITE_WF_CANAL_ALT_COLS ?? "",
   razonSocial: import.meta.env.VITE_WF_RAZON_SOCIAL_COL ?? "",
   linea: import.meta.env.VITE_VW_LINEA_COL ?? "",
   sublinea: import.meta.env.VITE_VW_SUBLINEA_COL ?? "",
@@ -20,7 +22,7 @@ const columnasWf = {
   sucursal: import.meta.env.VITE_VW_SUCURSAL_COL ?? "",
 
   importeOrigen: import.meta.env.VITE_WF_IMPORTE_SOLICITUD_COLS ?? "",
-  importeOrigenAlt: import.meta.env.VITE_WF_IMPORTE_SOLICITUD_ALT_COLS ?? "", 
+  importeOrigenAlt: import.meta.env.VITE_WF_IMPORTE_SOLICITUD_ALT_COLS ?? "",
   monedaOrigen: import.meta.env.VITE_WF_MONEDA_SOLICITUD_COLS ?? "",
 
   analista: import.meta.env.VITE_VW_ANALISTA_COLS ?? "",

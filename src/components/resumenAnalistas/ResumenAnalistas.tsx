@@ -77,8 +77,8 @@ const ResumenAnalistas: React.FC = () => {
 
   return <section>
     <div>
-      <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
-      <h2>Cuadro de Analistas</h2><br />
+      <h2>Cuadro de Analistas</h2>
+      <Link to="mail"><span>Ver legajos asignados en el dia</span></Link> <br /> <br />
       <div className={styles.filtrosContainer}>
         <h5>FILTROS</h5>
         <div>
