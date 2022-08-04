@@ -113,12 +113,12 @@ const TablaGenerica: React.FC<props> = ({ tableName, headers, tableBody }) => {
           <tbody>
             {
               data.map((exp, index) => <tr
-                key={index}
+                key={"tablerow" + index}
                 onMouseEnter={() => mouseEnterLeaveHandler(exp)}
                 onMouseLeave={() => mouseEnterLeaveHandler(undefined)}
               >
                 {
-                  headers.map((value, index) => <td key={index} >
+                  headers.map((value, index) => <td key={"header" + index + "-" + index} >
                     {exp[value]}
                   </td>)
                 }

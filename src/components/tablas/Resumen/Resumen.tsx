@@ -15,9 +15,9 @@ interface Props {
 
 
 
-const { canal, codigoSol, razonSocial, asesorComercial, sucursal, analista, fechaFinalizadoAnalista } = columnasWf
-const tablaSuperv = ["Días GR", "Días asignado", "Días pendiente", "Días supervisión", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista, fechaFinalizadoAnalista]
-const tablaAnalisis = ["Días GR", "Días asignado", "Días pendiente", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista]
+const { canal, codigoSol, razonSocial, asesorComercial, analista } = columnasWf
+const tablaSuperv = ["Días GR", "Días asignado", "Días pendiente", "Días supervisión", codigoSol, razonSocial, analista, canal, asesorComercial]
+const tablaAnalisis = ["Días GR", "Días asignado", "Días pendiente", codigoSol, razonSocial, analista, canal, asesorComercial]
 
 const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }) => {
   const { fullCount } = useTablesWF()
