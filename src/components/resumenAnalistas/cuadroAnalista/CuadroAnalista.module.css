@@ -138,3 +138,7 @@
 .isDevuelto {
   color: red;
 }
+
+.isAsignadoDia {
+  font-style: italic;
+}

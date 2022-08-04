@@ -1,28 +1,30 @@
+import moment from "moment";
 import React from "react";
 import columnasWf from "../../../config";
 import { useUser } from "../../../context";
 import { getImporteSolicitud, getLineaExpediente, getNivel } from "../../../helpers/workflowHelper";
 import styles from "./CuadroAnalista.module.css";
 
-const { faltaInfo, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
+const { faltaInfo, fechaAsignadoAnalista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
 
 export function getEstadoStyle(solicitud: Expediente[]) {
 
   let isDevuelto = solicitud[0][fechaDevolucion]
+  let isAsignadoDia = solicitud[0][fechaAsignadoAnalista] && moment().diff(moment(solicitud[0][fechaAsignadoAnalista], "DD/MM/YYYY"), "days") === 0 && styles.isAsignadoDia + " " || " "
 
   if (isDevuelto) {
-    return styles.isDevuelto
+    return isAsignadoDia + styles.isDevuelto
   }
   let isFinalizado = solicitud[0][fechaFinalizadoAnalista]
 
   if (isFinalizado) {
-    return styles.isFinalizado
+    return isAsignadoDia + styles.isFinalizado
   }
 
   let faltanteInfo = solicitud[0][faltaInfo]?.toLowerCase() === "si" ?? true
 
   if (faltanteInfo) {
-    return styles.isFaltaInfo
+    return isAsignadoDia + styles.isFaltaInfo
   }
 }
 
@@ -41,7 +43,7 @@ const CuadroAnalista: React.FC<ICuadroAnalistaShowingProps> = ({ analista, solic
         {
           Object.entries(solicitudes).map(([solicitud, expedientes]) => {
             let omit = false;
-            
+
             if (devuelto) {
               omit = expedientes.some((expediente) => expediente[fechaDevolucion])
             }
