@@ -475,9 +475,9 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
       supervision: supervisionCount,
       devueltas: devueltasCount,
       ["total canal"]: {
-        estandar: ingresarCount.estandar + asignarCount.estandar + pendientesCount.estandar + analisisCount.estandar + supervisionCount.estandar + devueltasCount.estandar,
-        express: ingresarCount.express + asignarCount.express + pendientesCount.express + analisisCount.express + supervisionCount.express + devueltasCount.express,
-        productivas: ingresarCount.productivas + asignarCount.productivas + pendientesCount.productivas + analisisCount.productivas + supervisionCount.productivas + devueltasCount.productivas,
+        estandar: asignarCount.estandar + pendientesCount.estandar + analisisCount.estandar + supervisionCount.estandar,
+        express: asignarCount.express + pendientesCount.express + analisisCount.express + supervisionCount.express ,
+        productivas: asignarCount.productivas + pendientesCount.productivas + analisisCount.productivas + supervisionCount.productivas 
       }
     })
   }, [supervisionCount, devueltasCount])

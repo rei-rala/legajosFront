@@ -142,7 +142,12 @@ const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }
                     {
                       Object.entries(fullCount).map(([estado, valores]) => (
                         <th key={"lastThRow" + estado}>
-                          {Object.values(valores).reduce((acc, v) => acc + v, 0)}
+                          <>
+                            {estado == "total canal"
+                              ? Object.values(valores).reduce((acc, v) => acc + v, 0)
+                              : Object.values(valores).reduce((acc, v) => acc + v, 0)
+                            }
+                          </>
                         </th>
                       ))
                     }
