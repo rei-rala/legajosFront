@@ -53,7 +53,7 @@ const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }
 
 
   const TablaAnalisis = useMemo(() => {
-    let analisisTableName = "en análisis " + (minDayFilter > 0 ? " de " + minDayFilter + " o más " + columnFiltered : "")
+    let analisisTableName = minDayFilter > 0 ? " con " + minDayFilter + " o más " + columnFiltered : ""
     let filterAnalisis: TableBody = {}
 
     for (let sol of Object.values(analisisTBody)) {
@@ -68,7 +68,7 @@ const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }
   }, [analisisTBody, minDayFilter, columnFiltered])
 
   const TablaSupervision = useMemo(() => {
-    let supervisionTableName = "en supervisión " + (minDayFilter > 0 ? " de " + minDayFilter + " o más " + columnFiltered : "")
+    let supervisionTableName = minDayFilter > 0 ? " con " + minDayFilter + " o más " + columnFiltered : ""
     let filterSupervision: TableBody = {}
 
     for (let sol of Object.values(supervisionTBody)) {
