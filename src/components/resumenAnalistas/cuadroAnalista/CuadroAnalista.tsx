@@ -26,6 +26,8 @@ export function getEstadoStyle(solicitud: Expediente[]) {
   if (faltanteInfo) {
     return isAsignadoDia + styles.isFaltaInfo
   }
+
+  return isAsignadoDia
 }
 
 

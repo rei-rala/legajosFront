@@ -52,8 +52,6 @@ const WfAnalistasMail: React.FC = () => {
     </section>
   }
 
-  console.log(analistasAsignadosDia)
-
   return <section>
     <Link to="/workflow/analistas">Atras</Link>
     <h1>Copiar tabla Email para analistas</h1>
