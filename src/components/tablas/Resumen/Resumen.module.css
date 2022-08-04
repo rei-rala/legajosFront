@@ -22,5 +22,50 @@
 .miniTabla tr:last-child,
 .miniTabla td:last-child {
   font-weight: bold;
-  padding: 0.25rem
+  padding: 0.25rem;
+}
+
+.filterWrapper {
+  position: fixed;
+  left: 50vw;
+  bottom: 5vh;
+  transform: translateX(-50%);
+  z-index: 999;
+
+
+  border-radius: 10px;
+  border: 2px inset red;
+  background-color: white;
+  padding: 0.5rem;
+}
+
+.filter {
+  display: flex;
+  flex-direction: row nowrap;
+  align-items: center;
+
+  border-radius: 10px;
+  border: 2px inset red;
+  margin: 0.25rem;
+  padding: 0.25rem;
+}
+
+.filter * {
+  background-color: transparent;
+}
+
+.filter input {
+  border: none;
+  padding: 0.5rem;
+  width: 100%;
+  text-align: end;
+}
+
+.filter select {
+  border: none;
+  padding: 0.5rem;
+}
+
+.filter option {
+  padding: 0.5rem;
 }

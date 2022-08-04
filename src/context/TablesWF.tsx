@@ -258,7 +258,7 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         pendientes[solCode][razonSocial] = exp[razonSocial]
         pendientes[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
         pendientes[solCode][fechaAsignadoAnalista] = exp[fechaAsignadoAnalista] && moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        pendientes[solCode][faltaInfo] = '-'
+        pendientes[solCode][faltaInfo] = exp[faltaInfo]
         pendientes[solCode][faltaInfoDesde] = exp[faltaInfoDesde] && moment(exp[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
         pendientes[solCode][faltaInfoHasta] = exp[faltaInfoHasta] && moment(exp[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
         pendientes[solCode][analista] = exp[analista]
@@ -267,7 +267,7 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         pendientes[solCode][asesorComercial] = exp[asesorComercial]
         pendientes[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
         pendientes[solCode]["Días asignado"] = dayFiltered.diff(moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        pendientes[solCode]["Días pendiente"] = exp[faltaInfoHasta] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : 0
+        pendientes[solCode]["Días pendiente"] = moment().diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days')
 
         // Contador de expedientes
         let nivel = getNivel(exp)
@@ -296,7 +296,7 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
 
         // Pre chequeos
         let estadoExpInvalido = ["Análisis de Bastanteo/Riesgos", "Analisis"].includes((exp[estadoExp] as string)) === false;
-        let faltanteInfo = exp[faltaInfo];
+        let faltanteInfo = !!exp[faltaInfo];
         let faltanteAnalista = !exp[analista];
         let finalizado = exp[fechaFinalizadoAnalista];
 
@@ -316,7 +316,7 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         analisis[solCode][razonSocial] = exp[razonSocial]
         analisis[solCode][fechaIngreso] = exp[fechaIngreso] && moment(exp[fechaIngreso], "DD/MM/YYYY").format("DD/MM")
         analisis[solCode][fechaAsignadoAnalista] = exp[fechaAsignadoAnalista] && moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY").format("DD/MM")
-        analisis[solCode][faltaInfo] = '-'
+        analisis[solCode][faltaInfo] = exp[faltaInfo]
         analisis[solCode][faltaInfoDesde] = exp[faltaInfoDesde] && moment(exp[faltaInfoDesde], "DD/MM/YYYY").format("DD/MM")
         analisis[solCode][faltaInfoHasta] = exp[faltaInfoHasta] && moment(exp[faltaInfoHasta], "DD/MM/YYYY").format("DD/MM")
         analisis[solCode][analista] = exp[analista]
@@ -325,7 +325,7 @@ export const TablesWFContext: (props: Props) => JSX.Element = ({ children }) => 
         analisis[solCode][asesorComercial] = exp[asesorComercial]
         analisis[solCode]["Días GR"] = dayFiltered.diff(moment(exp[fechaIngreso], "DD/MM/YYYY"), 'days')
         analisis[solCode]["Días asignado"] = dayFiltered.diff(moment(exp[fechaAsignadoAnalista], "DD/MM/YYYY"), 'days')
-        analisis[solCode]["Días pendiente"] = exp[faltaInfoHasta] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : 0
+        analisis[solCode]["Días pendiente"] = exp[faltaInfoHasta] && exp[faltaInfoDesde] ? moment(exp[faltaInfoHasta], "DD/MM/YYYY").diff(moment(exp[faltaInfoDesde], "DD/MM/YYYY"), 'days') : 0
 
         // Contador de expedientes
         let nivel = getNivel(exp)

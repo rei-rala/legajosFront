@@ -16,20 +16,22 @@ interface Props {
 
 
 const { canal, codigoSol, razonSocial, asesorComercial, sucursal, analista, fechaFinalizadoAnalista } = columnasWf
-const tablaSuperv = ["Días GR", "Días asignado", "Días pendiente", "Días finalizado", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista, fechaFinalizadoAnalista]
+const tablaSuperv = ["Días GR", "Días asignado", "Días pendiente", "Días supervisión", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista, fechaFinalizadoAnalista]
 const tablaAnalisis = ["Días GR", "Días asignado", "Días pendiente", codigoSol, razonSocial, canal, asesorComercial, sucursal, analista]
 
 const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }) => {
   const { fullCount } = useTablesWF()
   const solicitudesTotal = Object.values(fullCount["total canal"]).reduce((acc, cur) => acc + cur, 0)
 
-
   const [tablaInvertida, setTablaInvertida] = useState(false)
   const [hideMiddle, setHideMiddle] = useState(false)
 
   const [dayFiltered, setDayFiltered] = useState<Moment>(moment());
 
-  const [legajosIngresadosDia, cantidadLegajosIngresados] = useMemo(() => {
+  const [minDayFilter, setMinDayFilter] = useState<number>(0);
+  const [columnFiltered, setColumnFiltered] = useState<string>("Días GR");
+
+  const [_, cantidadLegajosIngresados] = useMemo(() => {
     const solicitudesDia = []
     for (let sol of Object.values(fullTBody)) {
       let fechaIngreso = sol["Ingreso Riesgo"]
@@ -50,13 +52,42 @@ const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }
   }, []);
 
 
+  const TablaAnalisis = useMemo(() => {
+    let analisisTableName = "en análisis " + (minDayFilter > 0 ? " de " + minDayFilter + " o más " + columnFiltered : "")
+    let filterAnalisis: TableBody = {}
+
+    for (let sol of Object.values(analisisTBody)) {
+      if (sol[columnFiltered] >= minDayFilter) {
+        filterAnalisis[sol[codigoSol]] = sol
+      }
+    }
+
+    return Object.keys(filterAnalisis).length > 0
+      ? <TablaGenerica headers={tablaAnalisis} tableBody={filterAnalisis} tableName={analisisTableName} />
+      : <i> No hay solicitudes en análisis con el criterio proporcionado</i>
+  }, [analisisTBody, minDayFilter, columnFiltered])
+
+  const TablaSupervision = useMemo(() => {
+    let supervisionTableName = "en supervisión " + (minDayFilter > 0 ? " de " + minDayFilter + " o más " + columnFiltered : "")
+    let filterSupervision: TableBody = {}
+
+    for (let sol of Object.values(supervisionTBody)) {
+      if (sol[columnFiltered] >= minDayFilter) {
+        filterSupervision[sol[codigoSol]] = sol
+      }
+    }
+    return Object.keys(filterSupervision).length > 0
+      ? <TablaGenerica headers={tablaSuperv} tableBody={filterSupervision} tableName={supervisionTableName} />
+      : <i> No hay solicitudes en supervisión con el criterio proporcionado</i>
+  }, [supervisionTBody, minDayFilter, columnFiltered])
+
+
   return (
     <div className={styles.resumen}>
       <h3>
         Mostrando Resumen  <button onClick={() => setTablaInvertida(!tablaInvertida)}>Invertir</button>  <button onClick={() => setHideMiddle(!hideMiddle)}>Ocultar intermedios</button>
       </h3>
       <div className={styles.miniTabla}>
-
         <table>
           {
             tablaInvertida
@@ -167,17 +198,29 @@ const Resumen: React.FC<Props> = ({ supervisionTBody, analisisTBody, fullTBody }
           <p>El {dayFiltered.locale('es').format("dddd D [de] MMMM")} {cantidadLegajosIngresados === 0 ? "no hubo" : "hubo " + cantidadLegajosIngresados} ingresos</p>
         </div>
 
-
+        <div className={styles.filterWrapper}>
+          <h5>Filtrar por cantidad de días</h5>
+          <div className={styles.filter}>
+            <input type="number" min={0} max={999} value={minDayFilter} onChange={(e) => setMinDayFilter(Number(e.target.value))} />
+            <select value={columnFiltered} onChange={(e) => setColumnFiltered(e.target.value)}>
+              {
+                ["Días GR", "Días asignado", "Días pendiente", "Días supervisión"].map(str => (
+                  <option key={str} value={str}>{str}</option>
+                ))
+              }
+            </select>
+          </div>
+        </div>
       </div>
 
       <div>
         <h4>Analisis</h4>
-        <TablaGenerica headers={tablaAnalisis} tableBody={analisisTBody} tableName="analisis" />
+        {TablaAnalisis}
       </div>
 
       <div>
         <h4>Supervision</h4>
-        <TablaGenerica headers={tablaSuperv} tableBody={supervisionTBody} tableName="supervision" />
+        {TablaSupervision}
       </div>
 
     </div >

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import TablaGenerica from "./TablaGenerica/TablaGenerica";
 import columnasWf from "../../config";
 
-const tableName = "analisis"
 // TODO: Hacer esto como la gente
 const { canal, codigoSol, codigoExp, estadoExp, razonSocial, asesorComercial, sucursal, analista, fechaIngreso } = columnasWf
 // las columnas tendran el orden que se asignen en este array
@@ -17,7 +16,7 @@ const Asignar: React.FC<IWorkflowTable> = ({ tableBody }) => {
   return (
     <div>
       <h3>Mostrando legajos ingresados sin asignar</h3>
-      <TablaGenerica headers={validColumns} tableBody={tableBody} tableName={tableName} />
+      <TablaGenerica headers={validColumns} tableBody={tableBody} />
     </div>
   )
 }

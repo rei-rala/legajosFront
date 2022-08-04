@@ -14,7 +14,7 @@ const Completo: React.FC<IWorkflowTable> = ({ tableBody, headers }) => {
   return (
     <div>
       <h3>Mostrando tabla completa</h3>
-      <TablaGenerica headers={headers} tableBody={tableBody} tableName={"completo"} />
+      <TablaGenerica headers={headers} tableBody={tableBody} />
     </div>
   )
 

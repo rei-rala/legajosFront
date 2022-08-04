@@ -14,12 +14,12 @@ interface props {
     [codigoSol: string]: Expediente;
     [codigoSol: number]: Expediente;
   },
-  tableName: string,
+  tableName?: string,
 }
 
 const { razonSocial, codigoSol, codigoSolAlt, estadoExp, canal, canalAlt, analista, asesorComercial } = columnasWf
 
-const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
+const TablaGenerica: React.FC<props> = ({ tableName, headers, tableBody }) => {
   const { parsedWorkflow } = useWorkflow()
   const { toggleHoverInfo, preferences: { hideHoverInfo } } = useUser()
   const [data, setData] = useState(Object.values(tableBody))
@@ -55,8 +55,12 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
 
 
   useEffect(() => {
+    setData(Object.values(tableBody))
+  }, [tableBody])
+
+  useEffect(() => {
     Promise.resolve([])
-      .then((d) => setData(d))
+      .then((d: Expediente[]) => setData(d))
       .then(() => data.sort((a, b) => {
         let aVal = a[sortedBy.columnName] ?? "*"
         let bVal = b[sortedBy.columnName] ?? "*"
@@ -76,11 +80,10 @@ const TablaGenerica: React.FC<props> = ({ headers, tableBody }) => {
     })
   }, [headers])
 
+
   return (
     <>
-      <i>{cantidadSol} solicitud{cantidadSol !== 1 && "es"} </i>
-      <button onClick={toggleHoverInfo}>{hideHoverInfo ? "Mostrar" : "Ocultar"}</button>
-
+      <i>{cantidadSol} solicitud{cantidadSol !== 1 && "es"} {tableName ? tableName : ""} </i>
       <HoverHandler data={hovered} />
 
 
