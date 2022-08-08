@@ -9,7 +9,8 @@ const { faltaInfo, fechaAsignadoAnalista, fechaDevolucion, fechaFinalizadoAnalis
 
 export function getEstadoStyle(solicitud: Expediente[]) {
 
-  let isDevuelto = solicitud[0][fechaDevolucion]
+  let faltanteInfo = solicitud[0][faltaInfo]?.toLowerCase() === "si" ?? false
+  let isDevuelto = solicitud[0][fechaDevolucion] && faltanteInfo
   let isAsignadoDia = solicitud[0][fechaAsignadoAnalista] && moment().diff(moment(solicitud[0][fechaAsignadoAnalista], "DD/MM/YYYY"), "days") === 0 && styles.isAsignadoDia + " " || " "
 
   if (isDevuelto) {
@@ -20,8 +21,6 @@ export function getEstadoStyle(solicitud: Expediente[]) {
   if (isFinalizado) {
     return isAsignadoDia + styles.isFinalizado
   }
-
-  let faltanteInfo = solicitud[0][faltaInfo]?.toLowerCase() === "si" ?? true
 
   if (faltanteInfo) {
     return isAsignadoDia + styles.isFaltaInfo
