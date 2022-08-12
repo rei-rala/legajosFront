@@ -2,7 +2,7 @@
   border: 2px inset red;
 }
 
-.boxNoAsignado .analistaBox_title {
+.boxNoAsignado :is(.analistaBox_title, h3) {
   background: gray;
 }
 
@@ -12,22 +12,85 @@
   justify-content: space-between;
 
   width: 100%;
-  max-width: 250px;
+  max-width: 280px;
 
   border-radius: 0.5rem;
+  border: 1px solid var(--color-primary);
   background-color: #f5f5f5;
   box-shadow: 5px 5px 1px rgb(0, 0, 0, 0.25);
   overflow: hidden;
 }
 
-.analistaBox > *:not(.analistaBox_content) {
-  padding: 0.25rem;
+.analistaBox_title {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 1em;
+  width: 100%;
 }
 
-.analistaBox_title {
-  color: white;
-  font-size: 1.1em;
-  font-weight: bold;
+.analistaBox_title h3 {
+  overflow: hidden;
+  word-wrap: break-all;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analistaBox_title :is(span, label) {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid white;
+  font-size: 0.95rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  font-family: monospace;
+}
+
+.analistaBox label {
+  cursor: pointer;
+}
+
+.analistaBox label input {
+  display: none;
+}
+
+.analistaBox_table,
+.analistaBox_table__sub {
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.analistaBox_table__sub tr :last-child {
+  padding: 0.2rem;
+}
+
+.analistaBox_table__sub td {
+  max-width: 33%;
+  min-width: 33%;
+}
+
+.analistaBox_table * {
+  padding: 0;
+}
+
+.analistaBox_table__pendientes {
+  color: red;
+}
+
+.analistaBox_table__finalizado {
+  color: rgb(3, 194, 3);
+}
+
+.analistaBox thead th {
+  background-color: rgb(215, 215, 215);
+  color: black;
 }
 
 .analistaBox_content {
@@ -109,21 +172,14 @@
 .analistaBox_footer {
   display: flex;
   justify-content: space-around;
+  border-top: 1px solid var(--color-primary);
   width: 100%;
   font-size: 0.8rem;
-  border-top: 1px solid black;
-  font-weight: bold;
 }
 
-.analistaBox_footer label {
-  cursor: pointer;
-}
-
-.analistaBox_footer label input {
-  display: none;
-}
-
-.isFaltaInfo, .isFinalizado, .isDevuelto {
+.isFaltaInfo,
+.isFinalizado,
+.isDevuelto {
   font-weight: bold;
 }
 

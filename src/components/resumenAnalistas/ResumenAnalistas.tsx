@@ -13,7 +13,7 @@ const { analista: analistaColumn, fechaIngreso: fechaIngresoColumn } = columnasW
 
 const ResumenAnalistas: React.FC = () => {
   const { parsedWorkflow } = useWorkflow()
-  const { preferences: userPreferences, toggleAnalistaHide } = useUser()
+  const { preferences: userPreferences, toggleAnalistaHide, toggleFooterHide } = useUser()
   const { analistaSectionHide } = userPreferences
 
   const [renderCount, setRenderCount] = useState(0)
@@ -79,6 +79,8 @@ const ResumenAnalistas: React.FC = () => {
     <div>
       <h2>Cuadro de Analistas</h2>
       <Link to="mail"><span>Ver legajos asignados en el dia</span></Link> <br /> <br />
+
+
       <div className={styles.filtrosContainer}>
         <h5>FILTROS</h5>
         <div>
@@ -91,6 +93,9 @@ const ResumenAnalistas: React.FC = () => {
 
         </div>
       </div>
+
+      <span>Mostrar cuadro inferior? <button onClick={toggleFooterHide}>{userPreferences.hideFooter ? "No" : "Si"}</button></span><br /><br />
+
       <HoverHandler data={currentHover} />
       <div className={styles.analistasContainer}>
         {
@@ -99,14 +104,14 @@ const ResumenAnalistas: React.FC = () => {
       </div>
     </div>
 
-    <div>
+    {hiddenAnalistas.length > 0 && <div>
       <h3>Analistas ocultos</h3>
       <div className={styles.analistasContainer_hide}>
         {
           hiddenAnalistas.map(analista => <CuadroAnalistaHidden key={analista.nombre} analista={analista.nombre} solicitudes={analista.solicitudes} handleHide={handleHide} />)
         }
       </div>
-    </div>
+    </div>}
   </section>;
 }
 

@@ -12,15 +12,18 @@ type UserContextType = {
     sectionMaxWidth: boolean,
     analistaSectionHide: AnalistaSectionHide,
     hideHoverInfo: boolean,
+    hideFooter: boolean
   },
   toggleAnalistaHide: (section: keyof AnalistaSectionHide) => void,
   toggleHoverInfo: () => void,
+  toggleFooterHide: () => void,
 }
 
 export const User = createContext<UserContextType>({
   preferences: {
     hideHoverInfo: false,
     sectionMaxWidth: true,
+    hideFooter: false,
     analistaSectionHide: {
       analisis: false,
       pendiente: false,
@@ -30,6 +33,7 @@ export const User = createContext<UserContextType>({
   },
   toggleAnalistaHide: () => { },
   toggleHoverInfo: () => { },
+  toggleFooterHide: () => { }
 })
 
 type Props = { children: React.ReactNode }
@@ -38,22 +42,27 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
   const [preferences, setPreferences] = useState({
     sectionMaxWidth: true,
     hideHoverInfo: false,
+    hideFooter: false,
     analistaSectionHide: {
-      pendiente: false,
       analisis: false,
+      pendiente: false,
       finalizado: false,
       devuelto: false,
     }
   })
 
   const toggleAnalistaHide = (section: keyof AnalistaSectionHide) => {
-    setPreferences({
+    const newPreferences = {
       ...preferences,
       analistaSectionHide: {
         ...preferences.analistaSectionHide,
         [section]: !preferences.analistaSectionHide[section]
       }
-    })
+    }
+    
+    setPreferences(newPreferences)
+
+    localStorage.setItem("analistasSection", JSON.stringify(newPreferences.analistaSectionHide))
   }
 
   function toggleHoverInfo() {
@@ -63,17 +72,44 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
     })
   }
 
+  function toggleFooterHide() {
+    setPreferences({
+      ...preferences,
+      hideFooter: !preferences.hideFooter
+    })
+
+    localStorage.setItem("hideFooter", "" + !preferences.hideFooter)
+  }
+
   useEffect(() => {
     preferences.sectionMaxWidth
       ? document.body.classList.add("ignoreSectionMaxWidth")
       : document.body.classList.remove("ignoreSectionMaxWidth")
   }, [preferences.sectionMaxWidth])
 
+  useEffect(() => {
+    localStorage.getItem("hideFooter") === "true"
+      ? toggleFooterHide()
+      : null;
+
+    localStorage.getItem("hideHoverInfo") === "true"
+      ? toggleHoverInfo()
+      : null;
+
+    localStorage.getItem("analistasSection") === null
+      ? null
+      : setPreferences({
+        ...preferences,
+        analistaSectionHide: JSON.parse(localStorage.getItem("analistasSection") as string)
+      })
+  }, [])
+
   return (
     <User.Provider value={{
       preferences,
       toggleAnalistaHide,
       toggleHoverInfo,
+      toggleFooterHide
     }}>
       {children}
     </User.Provider>
