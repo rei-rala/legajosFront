@@ -1,4 +1,4 @@
-import moment from "../libs/moment";
+import moment, { Moment } from "../libs/moment";
 
 import {
   getColumnSolicitudExpediente,
@@ -77,4 +77,56 @@ export function shortenString(str: string, maxLength: number = 40) {
     return str.substring(0, maxLength) + "..."
   }
   return str
+}
+
+export function momentFromToday(date: Moment | Date | string | null) {
+  if (!date) {
+    return null
+  }
+
+  const today = moment()
+  let inputDate;
+
+  if (typeof date === "string") {
+    inputDate = moment(date, "DD/MM/YYYY")
+
+    if (!inputDate.isValid()) {
+      inputDate = moment(date, "D/MM")
+    }
+
+    if (!inputDate.isValid()) {
+      inputDate = moment(date, "D/M")
+    }
+
+    if (!inputDate.isValid()) {
+      inputDate = moment(date)
+    }
+
+  } else {
+    inputDate = moment(date)
+  }
+
+  return today.diff(inputDate, "days")
+}
+
+export function getDateDiff(dateA: Moment | Date | string | null, dateB: Moment | Date | string | null, inputFormatDate: string = "DD/MM/YYYY") {
+  if (!dateA || !dateB) {
+    return null
+  }
+
+  let first, second;
+
+  first = typeof dateA === "string" ? moment(dateA, inputFormatDate) : moment(dateA)
+  second = typeof dateB === "string" ? moment(dateB, inputFormatDate) : moment(dateB)
+
+  return first.diff(second, "days")
+}
+
+export function getDateDMM(date: Moment | Date | string | null, inputFormatDate: string = "DD/MM/YYYY") {
+  if (!date) {
+    return null
+  }
+  let inputDate = typeof date === "string" ? moment(date, inputFormatDate) : moment(date)
+
+  return inputDate.format("D/MM")
 }

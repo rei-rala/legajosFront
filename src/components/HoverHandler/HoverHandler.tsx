@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import columnasWf from "../../config";
+import { getDateDiff, getDateDMM, momentFromToday } from "../../helpers";
 import { getGrupoCanal, getImporteSolicitud, getLineaExpediente } from "../../helpers/workflowHelper";
 
 import styles from "./HoverHandler.module.css"
@@ -8,7 +9,43 @@ interface HoverHandlerProps {
   data?: any
 }
 
-const { analista, razonSocial: razonSocialCol, codigoSol, codigoSolAlt, codigoExp, canalGr, canal: canalSol, canalAlt: canalSolAlt, linea, sublinea, asesorComercial, sucursal: sucursalCol, fechaIngreso: fechaIngresoCol, fechaDevolucion, fechaFinalizadoAnalista, faltaInfo } = columnasWf
+function getEstado(sol: any) {
+  let sinAsignar = !sol.analista
+  let isDevuelto = sol.fechaDevolucion
+  let pendienteIngreso = !sol.fechaIngreso
+
+  if (pendienteIngreso) {
+    return <b>Pendiente de ingreso</b>
+  }
+
+  if (sinAsignar) {
+    return <b>Sin asignar</b>
+  }
+
+  if (isDevuelto) {
+    return <b>Devuelto</b>
+  }
+  let isFinalizado = sol.fechaFinalizado
+
+  if (isFinalizado) {
+    return <b>Finalizado</b>
+  }
+
+  let faltanteInfo = sol.isPendiente ?? false
+
+  if (faltanteInfo) {
+    return <b>Pendiente</b>
+  }
+
+  return <b>En análisis</b>
+}
+
+const { analista, razonSocial: razonSocialCol,
+  codigoSol, codigoSolAlt, codigoExp, canalGr, canal: canalSol, canalAlt: canalSolAlt, linea, sublinea,
+  asesorComercial, sucursal: sucursalCol,
+  fechaIngreso: fechaIngresoCol, fechaAsignadoAnalista: fechaAsignadoCol, fechaDevolucion, fechaFinalizadoAnalista,
+  faltaInfo, faltaInfoDesde, faltaInfoHasta,
+} = columnasWf
 
 const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
 
@@ -37,54 +74,47 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
 
   const sol = {
     codigo: data[0][codigoSol] ?? data[0][codigoSolAlt],
+    estado: getEstado(data[0]),
     razonSocial: data[0][razonSocialCol],
     asesor: data[0][asesorComercial],
+    analista: data[0][analista],
     canal: data[0][canalSol] ?? data[0][canalSolAlt],
     sucursal: data[0][sucursalCol],
-    fechaIngreso: data[0][fechaIngresoCol],
+    fechaIngreso: getDateDMM(data[0][fechaIngresoCol]),
+    fechaAsignado: getDateDMM(data[0][fechaAsignadoCol]),
+    isPendiente: data[0][faltaInfo],
+    fechaPendDesde: getDateDMM(data[0][faltaInfoDesde]),
+    fechaPendHasta: getDateDMM(data[0][faltaInfoHasta]),
+    fechaDevolucion: getDateDMM(data[0][fechaDevolucion]),
+    fechaFinalizado: getDateDMM(data[0][fechaFinalizadoAnalista]),
     canalDeGR: data[0][canalGr]
   }
 
-  const estado = () => {
-    let sinAsignar = !data[0][analista]
-    let isDevuelto = data[0][fechaDevolucion]
-    let pendienteIngreso = !data[0][fechaIngresoCol]
+  const dayCount = {
+    ingreso: momentFromToday(sol.fechaIngreso),
+    asignado: momentFromToday(sol.fechaAsignado),
+    pendiente: momentFromToday(sol.fechaPendDesde),
+    devuelto: momentFromToday(sol.fechaDevolucion),
+    finalizado: momentFromToday(sol.fechaFinalizado),
 
-    if (pendienteIngreso) {
-      return <b>Pendiente de ingreso</b>
-    }
-
-    if (sinAsignar) {
-      return <b>Sin asignar</b>
-    }
-
-    if (isDevuelto) {
-      return <b>Devuelto</b>
-    }
-    let isFinalizado = data[0][fechaFinalizadoAnalista]
-
-    if (isFinalizado) {
-      return <b>Finalizado</b>
-    }
-
-    let faltanteInfo = data[0][faltaInfo]?.toLowerCase() === "si" ?? true
-
-    if (faltanteInfo) {
-      return <b>Pendiente</b>
-    }
-
-    return <b>En análisis</b>
+    diffPendiente: getDateDiff(sol.fechaPendHasta, sol.fechaPendDesde, "D/MM"),
   }
 
   return (
     <div>
       <div>
-        <p>Solicitud {sol.codigo}: {estado()}</p>
+        <p>Solicitud {sol.codigo}: {sol.estado}</p>
         <p>{sol.razonSocial}</p>
         <p> {sol.canal} {sol.canalDeGR}</p>
         <p></p>
         <p>{sol.asesor} ({sol.sucursal}) </p>
-        <p>Ingreso a GR {sol.fechaIngreso}</p>
+        <hr />
+        {sol.fechaIngreso && <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso}d) </p>}
+        {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado}d) </p>}
+        {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente}d) </p>}
+        {!sol.isPendiente && dayCount.diffPendiente !== null && <p>Pendiente entre {sol.fechaPendDesde} y {sol.fechaPendHasta} ({dayCount.diffPendiente! + 1}d)</p>}
+        {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto}d) </p>}
+        {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado}d) </p>}
         <hr />
       </div>
       <table className={styles.hoverTable}>
