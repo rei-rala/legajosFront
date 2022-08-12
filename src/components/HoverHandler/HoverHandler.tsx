@@ -110,13 +110,15 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
         <p> {sol.canal} {sol.canalDeGR}</p>
         <p></p>
         <p>{sol.asesor} ({sol.sucursal}) </p>
-        <hr />
-        {sol.fechaIngreso && <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso}d) </p>}
-        {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado}d) </p>}
-        {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente}d) </p>}
-        {!sol.isPendiente && dayCount.diffPendiente !== null && <p>Pendiente entre {sol.fechaPendDesde} y {sol.fechaPendHasta} ({dayCount.diffPendiente! + 1}d)</p>}
-        {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto}d) </p>}
-        {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado}d) </p>}
+        {sol.fechaIngreso && <>
+          <hr />
+          <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso}d) </p>
+          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado}d) </p>}
+          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente}d) </p>}
+          {!sol.isPendiente && dayCount.diffPendiente !== null && <p>Pendiente entre {sol.fechaPendDesde} y {sol.fechaPendHasta} ({dayCount.diffPendiente! + 1}d)</p>}
+          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto}d) </p>}
+          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado}d) </p>}
+        </>}
         <hr />
       </div>
       <table className={styles.hoverTable}>
