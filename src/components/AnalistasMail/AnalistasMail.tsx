@@ -6,7 +6,7 @@ import { getCanalGr } from "../../helpers/workflowHelper";
 import styles from "./AnalistasMail.module.css";
 
 type AnalistasAsignadosDia = { nombre: string, solicitudes: Expediente[] }[]
-const { razonSocial: razonSocialColumn, codEmpresa: codEmpresaColumn } = columnasWf
+const { razonSocial: razonSocialColumn, codEmpresa: codEmpresaColumn, cuit: cuitColumn } = columnasWf
 
 const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analistas: analistasAsignadosDia }) => {
 
@@ -55,6 +55,7 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                         let sol = solicitud[0]
                         return (
                           <li key={sol[razonSocialColumn]}>
+                            <span>{sol[cuitColumn]}</span>
                             <a
                               href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
                               target="_blank"

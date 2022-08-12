@@ -3,6 +3,7 @@ const columnasWf = {
   float: import.meta.env.VITE_WF_FLOAT_COLUMNS.split("|") ?? [],
 
   codEmpresa: import.meta.env.VITE_WF_COD_EMPRESA ?? "",
+  cuit: import.meta.env.VITE_WF_CUIT ?? "",
 
   codigoSol: import.meta.env.VITE_WF_COD_SOLI_COLS ?? "",
   codigoSolAlt: import.meta.env.VITE_WF_COD_SOLI_ALT_COL ?? "",
