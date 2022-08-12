@@ -11,7 +11,9 @@ interface HoverHandlerProps {
 
 function getEstado(sol: any) {
   let sinAsignar = !sol.analista
-  let isDevuelto = sol.fechaDevolucion
+  let isFinalizado = sol.fechaFinalizado
+  let faltanteInfo = sol.isPendiente ?? false
+  let isDevuelto = sol.fechaDevolucion && faltanteInfo
   let pendienteIngreso = !sol.fechaIngreso
 
   if (pendienteIngreso) {
@@ -25,13 +27,11 @@ function getEstado(sol: any) {
   if (isDevuelto) {
     return <b>Devuelto</b>
   }
-  let isFinalizado = sol.fechaFinalizado
 
   if (isFinalizado) {
     return <b>Finalizado</b>
   }
 
-  let faltanteInfo = sol.isPendiente ?? false
 
   if (faltanteInfo) {
     return <b>Pendiente</b>
@@ -74,8 +74,8 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
 
   const sol = {
     codigo: data[0][codigoSol] ?? data[0][codigoSolAlt],
-    estado: getEstado(data[0]),
     razonSocial: data[0][razonSocialCol],
+    estado: <></>,
     asesor: data[0][asesorComercial],
     analista: data[0][analista],
     canal: data[0][canalSol] ?? data[0][canalSolAlt],
@@ -89,6 +89,8 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
     fechaFinalizado: getDateDMM(data[0][fechaFinalizadoAnalista]),
     canalDeGR: data[0][canalGr]
   }
+
+  sol.estado = getEstado(sol)
 
   const dayCount = {
     ingreso: momentFromToday(sol.fechaIngreso),
