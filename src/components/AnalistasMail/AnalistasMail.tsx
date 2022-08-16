@@ -54,7 +54,10 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                       {analista.solicitudes.map((solicitud) => {
                         let sol = solicitud[0]
                         return (
-                          <li key={sol[razonSocialColumn]}>
+                          <li
+                            className={styles.tableData}
+                            key={sol[razonSocialColumn]}
+                          >
                             <span>{sol[cuitColumn]}</span>
                             <a
                               href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
