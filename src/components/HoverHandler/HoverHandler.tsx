@@ -112,12 +112,12 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
         <p>{sol.asesor} ({sol.sucursal}) </p>
         {sol.fechaIngreso && <>
           <hr />
-          <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso}d) </p>
-          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado}d) </p>}
-          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente}d) </p>}
+          <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso !== 0 ? (dayCount.ingreso + "d") : "Hoy"}) </p>
+          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado !== 0 ? (dayCount.asignado + "d") : "Hoy"}) </p>}
+          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente !== 0 ? (dayCount.pendiente + "d") : "Hoy"}) </p>}
           {!sol.isPendiente && dayCount.diffPendiente !== null && <p>Pendiente entre {sol.fechaPendDesde} y {sol.fechaPendHasta} ({dayCount.diffPendiente! + 1}d)</p>}
-          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto}d) </p>}
-          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado}d) </p>}
+          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto !== 0 ? (dayCount.devuelto + "d") : "Hoy"}) </p>}
+          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado !== 0 ? (dayCount.finalizado + "d") : "Hoy"}) </p>}
         </>}
         <hr />
       </div>
