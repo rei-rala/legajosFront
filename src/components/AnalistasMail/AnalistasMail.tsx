@@ -59,12 +59,14 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                             key={sol[razonSocialColumn]}
                           >
                             <span>{sol[cuitColumn]}</span>
+                            <span className={styles.sep}> - </span>
                             <a
                               href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={e => e.preventDefault()}
                             >{shortenString(sol[razonSocialColumn])}</a>
+                            <span className={styles.sep}> - </span>
                             <span> {getCanalGr(sol)}</span>
                           </li>
                         )
