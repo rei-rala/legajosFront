@@ -59,7 +59,6 @@ const WfTablas: React.FC = () => {
   return <section>
     {workflow ? (
       <div>
-        <Link to="/workflow/">Atras</Link>
         <h1>Tabla resumen</h1>
         <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
         <div

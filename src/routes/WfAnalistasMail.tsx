@@ -53,7 +53,6 @@ const WfAnalistasMail: React.FC = () => {
   }
 
   return <section>
-    <Link to="/workflow/analistas">Atras</Link>
     <h1>Copiar tabla Email para analistas</h1>
     <span><Link to="/workflow" style={{ color: 'red', fontWeight: 'bold' }}> <sup>Cargar otro workflow?</sup></Link></span>
     <div>
