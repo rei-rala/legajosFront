@@ -66,19 +66,25 @@ export const UserContext: (props: Props) => JSX.Element = ({ children }) => {
   }
 
   function toggleHoverInfo() {
+    let hideHoverInfo = !preferences.hideHoverInfo 
+    
     setPreferences({
       ...preferences,
-      hideHoverInfo: !preferences.hideHoverInfo
+      hideHoverInfo, 
     })
+
+    localStorage.setItem("hideHoverInfo", JSON.stringify(hideHoverInfo))
   }
 
   function toggleFooterHide() {
+    let hideFooter = !preferences.hideFooter;
+
     setPreferences({
       ...preferences,
-      hideFooter: !preferences.hideFooter
+      hideFooter,
     })
 
-    localStorage.setItem("hideFooter", "" + !preferences.hideFooter)
+    localStorage.setItem("hideFooter", JSON.stringify(hideFooter))
   }
 
   useEffect(() => {
