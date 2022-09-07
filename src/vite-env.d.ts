@@ -29,6 +29,7 @@ interface ImportMetaEnv {
   readonly VITE_WF_ASIGNADO_ANALISTA_FECHA_COL: string
   readonly VITE_WF_INGRESO_GR_FECHA_COL: string
   readonly VITE_WF_SOLICITUD_FECHA_COL: string
+  readonly VITE_WF_RV_POTENCIAL_COL: string
 
   readonly VITE_VW_ASESOR_COM_COL: string
   readonly VITE_VW_SUCURSAL_COL: string

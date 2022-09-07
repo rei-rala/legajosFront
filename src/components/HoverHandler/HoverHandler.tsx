@@ -43,6 +43,7 @@ function getEstado(sol: any) {
 const { analista, razonSocial: razonSocialCol,
   codigoSol, codigoSolAlt, codigoExp, canalGr, canal: canalSol, canalAlt: canalSolAlt, linea, sublinea,
   asesorComercial, sucursal: sucursalCol,
+  rvPotencial,
   fechaIngreso: fechaIngresoCol, fechaAsignadoAnalista: fechaAsignadoCol, fechaDevolucion, fechaFinalizadoAnalista,
   faltaInfo, faltaInfoDesde, faltaInfoHasta,
 } = columnasWf
@@ -87,7 +88,8 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
     fechaPendHasta: getDateDMM(data[0][faltaInfoHasta]),
     fechaDevolucion: getDateDMM(data[0][fechaDevolucion]),
     fechaFinalizado: getDateDMM(data[0][fechaFinalizadoAnalista]),
-    canalDeGR: data[0][canalGr]
+    canalDeGR: data[0][canalGr],
+    rvPotencial: data[0][rvPotencial]
   }
 
   sol.estado = getEstado(sol)
@@ -107,8 +109,8 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
       <div>
         <p>Solicitud {sol.codigo}: {sol.estado}</p>
         <p>{sol.razonSocial}</p>
-        <p> {sol.canal} {sol.canalDeGR}</p>
-        <p></p>
+        <p>{sol.canal} {sol.canalDeGR}</p>
+        <p>{rvPotencial && `RV Potencial sin CPDT $ ${sol.rvPotencial}`}</p>
         <p>{sol.asesor} ({sol.sucursal}) </p>
         {sol.fechaIngreso && <>
           <hr />
