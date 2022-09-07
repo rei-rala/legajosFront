@@ -110,7 +110,7 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
         <p>Solicitud {sol.codigo}: {sol.estado}</p>
         <p>{sol.razonSocial}</p>
         <p>{sol.canal} {sol.canalDeGR}</p>
-        <p>{rvPotencial && `RV Potencial sin CPDT $ ${sol.rvPotencial}`}</p>
+        <p>{sol.rvPotencial && `RV Potencial sin CPDT $ ${sol.rvPotencial}`}</p>
         <p>{sol.asesor} ({sol.sucursal}) </p>
         {sol.fechaIngreso && <>
           <hr />
