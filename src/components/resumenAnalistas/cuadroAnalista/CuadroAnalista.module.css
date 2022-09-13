@@ -73,7 +73,7 @@
 
 .analistaBox_table__sub td {
   max-width: 33%;
-  min-width: 33%;
+  width: 100%;
 }
 
 .analistaBox_table * {
