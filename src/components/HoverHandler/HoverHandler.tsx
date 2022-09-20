@@ -43,6 +43,7 @@ function getEstado(sol: any) {
 const { analista, razonSocial: razonSocialCol,
   codigoSol, codigoSolAlt, codigoExp, canalGr, canal: canalSol, canalAlt: canalSolAlt, linea, sublinea,
   asesorComercial, sucursal: sucursalCol,
+  rvPotencial,
   fechaIngreso: fechaIngresoCol, fechaAsignadoAnalista: fechaAsignadoCol, fechaDevolucion, fechaFinalizadoAnalista,
   faltaInfo, faltaInfoDesde, faltaInfoHasta,
 } = columnasWf
@@ -87,7 +88,8 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
     fechaPendHasta: getDateDMM(data[0][faltaInfoHasta]),
     fechaDevolucion: getDateDMM(data[0][fechaDevolucion]),
     fechaFinalizado: getDateDMM(data[0][fechaFinalizadoAnalista]),
-    canalDeGR: data[0][canalGr]
+    canalDeGR: data[0][canalGr],
+    rvPotencial: data[0][rvPotencial]
   }
 
   sol.estado = getEstado(sol)
@@ -107,17 +109,17 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
       <div>
         <p>Solicitud {sol.codigo}: {sol.estado}</p>
         <p>{sol.razonSocial}</p>
-        <p> {sol.canal} {sol.canalDeGR}</p>
-        <p></p>
+        <p>{sol.canal} {sol.canalDeGR}</p>
+        <p>{sol.rvPotencial && `RV Potencial sin CPDT $ ${sol.rvPotencial}`}</p>
         <p>{sol.asesor} ({sol.sucursal}) </p>
         {sol.fechaIngreso && <>
           <hr />
-          <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso}d) </p>
-          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado}d) </p>}
-          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente}d) </p>}
+          <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso !== 0 ? (dayCount.ingreso + "d") : "Hoy"}) </p>
+          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado !== 0 ? (dayCount.asignado + "d") : "Hoy"}) </p>}
+          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente !== 0 ? (dayCount.pendiente + "d") : "Hoy"}) </p>}
           {!sol.isPendiente && dayCount.diffPendiente !== null && <p>Pendiente entre {sol.fechaPendDesde} y {sol.fechaPendHasta} ({dayCount.diffPendiente! + 1}d)</p>}
-          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto}d) </p>}
-          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado}d) </p>}
+          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto !== 0 ? (dayCount.devuelto + "d") : "Hoy"}) </p>}
+          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado !== 0 ? (dayCount.finalizado + "d") : "Hoy"}) </p>}
         </>}
         <hr />
       </div>
