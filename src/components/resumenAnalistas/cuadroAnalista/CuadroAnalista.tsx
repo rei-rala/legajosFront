@@ -6,7 +6,6 @@ import { getImporteSolicitud, getLineaExpediente, getNivel } from "../../../help
 import styles from "./CuadroAnalista.module.css";
 
 const { faltaInfo, fechaAsignadoAnalista, fechaDevolucion, fechaFinalizadoAnalista } = columnasWf
-const { canal, canalAlt } = columnasWf;
 
 export function getEstadoStyle(solicitud: Expediente[]) {
 
@@ -77,9 +76,9 @@ const TablaBox: React.FC<{ solicitudesAnalista: Expediente[][] }> = ({ solicitud
 
     for (let solicitud of solicitudesAnalista) {
       for (let expediente of solicitud) {
+        let omitPendiente = pendiente && expediente[faltaInfo] && !(expediente[fechaFinalizadoAnalista] && expediente[fechaDevolucion])
         let omitDevuelto = devuelto && expediente[fechaDevolucion] && expediente[faltaInfo]
         let omitFinalizado = finalizado && expediente[fechaFinalizadoAnalista]
-        let omitPendiente = pendiente && expediente[faltaInfo] && !(expediente[fechaFinalizadoAnalista] || expediente[fechaDevolucion])
 
         if (omitDevuelto || omitFinalizado || omitPendiente) {
           continue
@@ -165,7 +164,7 @@ const CuadroAnalista: React.FC<ICuadroAnalistaShowingProps> = ({ analista, solic
     for (let solicitud of solicitudes) {
       let exp = solicitud[0]
 
-      let omitDevuelto = devuelto && exp[fechaDevolucion]
+      let omitDevuelto = devuelto && exp[fechaDevolucion] && exp[faltaInfo]
       let omitFinalizado = finalizado && exp[fechaFinalizadoAnalista]
       let omitPendiente = pendiente && exp[faltaInfo] && !exp[fechaDevolucion]
 
@@ -200,7 +199,7 @@ const CuadroAnalista: React.FC<ICuadroAnalistaShowingProps> = ({ analista, solic
             let omit = false;
 
             if (devuelto) {
-              omit = expedientes.some((expediente) => expediente[fechaDevolucion])
+              omit = expedientes.some((expediente) => expediente[fechaDevolucion] && expediente[faltaInfo])
             }
 
             if (!omit && pendiente) {
@@ -215,7 +214,7 @@ const CuadroAnalista: React.FC<ICuadroAnalistaShowingProps> = ({ analista, solic
             if (!omit && analisis) {
               let p = !expedientes.some((expediente) => expediente[faltaInfo])
               let f = !expedientes.some((expediente) => expediente[fechaFinalizadoAnalista])
-              let d = !expedientes.some((expediente) => expediente[fechaDevolucion])
+              let d = !expedientes.some((expediente) => expediente[fechaDevolucion] && expediente[faltaInfo])
 
               omit = p && f && d
             }
