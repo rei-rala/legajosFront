@@ -44,3 +44,14 @@
   gap: 1rem;
   margin: 1rem auto;
 }
+
+.tableData {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  gap: 0.25rem;
+}
+
+.sep {
+  opacity: 0;
+}

@@ -17,6 +17,7 @@ const columnasWf = {
   linea: import.meta.env.VITE_VW_LINEA_COL ?? "",
   sublinea: import.meta.env.VITE_VW_SUBLINEA_COL ?? "",
   subcategoriaCanal: import.meta.env.VITE_VW_SUBCATEGORIA_CANAL_COL ?? "", // !!!!!!
+  rvPotencial: import.meta.env.VITE_WF_RV_POTENCIAL_COL ?? "",
 
   fechaIngreso: import.meta.env.VITE_WF_INGRESO_GR_FECHA_COL ?? "",
   asesorComercial: import.meta.env.VITE_VW_ASESOR_COM_COL ?? "",
