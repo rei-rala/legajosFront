@@ -50,35 +50,33 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                     </span>
                   </td>
                   <td>
-                    <ol>
-                      <table>
-                        <thead></thead>
-                        <tbody>
-                          {analista.solicitudes.map((solicitud) => {
-                            let sol = solicitud[0]
-                            return (
-                              <tr
-                                className={`${styles.tableData} ${styles.tableRowLine}`}
-                                key={sol[razonSocialColumn]}
-                              >
+                    <table>
+                      <thead></thead>
+                      <tbody>
+                        {analista.solicitudes.map((solicitud) => {
+                          let sol = solicitud[0]
+                          return (
+                            <tr
+                              className={`${styles.tableData} ${styles.tableRowLine}`}
+                              key={sol[razonSocialColumn]}
+                            >
 
-                                <td>{sol[cuitColumn]}</td>
-                                <td>
-                                  <a
-                                    href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={e => e.preventDefault()}
-                                  >{shortenString(sol[razonSocialColumn])}</a>
-                                </td>
-                                <td> {getCanalGr(sol)}</td>
-                              </tr>
-                            )
-                          }
-                          )}
-                        </tbody>
-                      </table>
-                    </ol>
+                              <td>{sol[cuitColumn]}</td>
+                              <td>
+                                <a
+                                  href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={e => e.preventDefault()}
+                                >{shortenString(sol[razonSocialColumn])}</a>
+                              </td>
+                              <td> {getCanalGr(sol)}</td>
+                            </tr>
+                          )
+                        }
+                        )}
+                      </tbody>
+                    </table>
                   </td>
                 </tr>
             })

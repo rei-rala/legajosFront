@@ -52,6 +52,11 @@
   gap: 0.25rem;
 }
 
-.sep {
-  opacity: 0;
+.tableRowLine {
+  width: 100%;
+  min-width: 640px;
+}
+
+.tableRowLine, .tableRowLine td {
+  background-color: transparent;
 }
