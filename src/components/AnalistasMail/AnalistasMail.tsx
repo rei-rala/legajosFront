@@ -51,27 +51,33 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                   </td>
                   <td>
                     <ol>
-                      {analista.solicitudes.map((solicitud) => {
-                        let sol = solicitud[0]
-                        return (
-                          <li
-                            className={styles.tableData}
-                            key={sol[razonSocialColumn]}
-                          >
-                            <span>{sol[cuitColumn]}</span>
-                            <span className={styles.sep}> - </span>
-                            <a
-                              href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={e => e.preventDefault()}
-                            >{shortenString(sol[razonSocialColumn])}</a>
-                            <span className={styles.sep}> - </span>
-                            <span> {getCanalGr(sol)}</span>
-                          </li>
-                        )
-                      }
-                      )}
+                      <table>
+                        <thead></thead>
+                        <tbody>
+                          {analista.solicitudes.map((solicitud) => {
+                            let sol = solicitud[0]
+                            return (
+                              <tr
+                                className={`${styles.tableData} ${styles.tableRowLine}`}
+                                key={sol[razonSocialColumn]}
+                              >
+
+                                <td>{sol[cuitColumn]}</td>
+                                <td>
+                                  <a
+                                    href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={e => e.preventDefault()}
+                                  >{shortenString(sol[razonSocialColumn])}</a>
+                                </td>
+                                <td> {getCanalGr(sol)}</td>
+                              </tr>
+                            )
+                          }
+                          )}
+                        </tbody>
+                      </table>
                     </ol>
                   </td>
                 </tr>
