@@ -54,9 +54,14 @@
 
 .tableRowLine {
   width: 100%;
-  min-width: 640px;
+  min-width: 300px;
 }
 
 .tableRowLine, .tableRowLine td {
   background-color: transparent;
+}
+
+.tableRowLine td:nth-child(2) {
+  width: 100%;
+  min-width: 250px;
 }
