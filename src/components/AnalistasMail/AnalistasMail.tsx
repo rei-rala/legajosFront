@@ -61,7 +61,7 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                               key={sol[razonSocialColumn]}
                             >
 
-                              <td>{sol[cuitColumn]} - </td>
+                              <td>{sol[cuitColumn]} </td>
                               <td>
                                 <a
                                   href={`https://sga/Empresas/${sol[codEmpresaColumn]}`}
@@ -70,7 +70,7 @@ const AnalistasMail: React.FC<{ analistas: AnalistasAsignadosDia }> = ({ analist
                                   onClick={e => e.preventDefault()}
                                 >{shortenString(sol[razonSocialColumn])}</a>
                               </td>
-                              <td> - {getCanalGr(sol)}</td>
+                              <td> {getCanalGr(sol)}</td>
                             </tr>
                           )
                         }
