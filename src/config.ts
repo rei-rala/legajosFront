@@ -1,6 +1,6 @@
 const columnasWf = {
-  date: import.meta.env.VITE_WF_DATE_COLUMNS.split("|") ?? [],
-  float: import.meta.env.VITE_WF_FLOAT_COLUMNS.split("|") ?? [],
+  date: import.meta.env.VITE_WF_DATE_COLUMNS?.split("|") ?? [],
+  float: import.meta.env.VITE_WF_FLOAT_COLUMNS?.split("|") ?? [],
 
   codEmpresa: import.meta.env.VITE_WF_COD_EMPRESA ?? "",
   cuit: import.meta.env.VITE_WF_CUIT ?? "",
@@ -16,7 +16,7 @@ const columnasWf = {
   razonSocial: import.meta.env.VITE_WF_RAZON_SOCIAL_COL ?? "",
   linea: import.meta.env.VITE_VW_LINEA_COL ?? "",
   sublinea: import.meta.env.VITE_VW_SUBLINEA_COL ?? "",
-  subcategoriaCanal: import.meta.env.VITE_VW_SUBCATEGORIA_CANAL_COL ?? "", // !!!!!!
+  subcategoriaCanal: import.meta.env.VITE_VW_SUBCATEGORIA_CANAL_COL ?? "",
   rvPotencial: import.meta.env.VITE_WF_RV_POTENCIAL_COL ?? "",
 
   fechaIngreso: import.meta.env.VITE_WF_INGRESO_GR_FECHA_COL ?? "",
@@ -28,13 +28,15 @@ const columnasWf = {
   monedaOrigen: import.meta.env.VITE_WF_MONEDA_SOLICITUD_COLS ?? "",
 
   analista: import.meta.env.VITE_VW_ANALISTA_COLS ?? "",
-  fechaAsignadoAnalista: import.meta.env.VITE_WF_ASIGNADO_ANALISTA_FECHA_COL ?? "",
-  fechaFinalizadoAnalista: import.meta.env.VITE_WF_FINALIZADO_ANALISTA_FECHA_COL ?? "",
+  fechaAsignadoAnalista:
+    import.meta.env.VITE_WF_ASIGNADO_ANALISTA_FECHA_COL ?? "",
+  fechaFinalizadoAnalista:
+    import.meta.env.VITE_WF_FINALIZADO_ANALISTA_FECHA_COL ?? "",
   fechaFinalizadoGr: import.meta.env.VITE_WF_FINALIZADO_GR_FECHA_COL ?? "",
   faltaInfo: import.meta.env.VITE_WF_FALTA_INFO_COL ?? "",
   faltaInfoDesde: import.meta.env.VITE_WF_FALTA_INFO_DESDE_COL ?? "",
   faltaInfoHasta: import.meta.env.VITE_WF_FALTA_INFO_HASTA_COL ?? "",
   fechaDevolucion: import.meta.env.VITE_WF_DEVOLUCION_ANALISTA_FECHA_COL ?? "",
-}
+};
 
-export default columnasWf
+export default columnasWf;
