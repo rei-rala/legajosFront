@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import columnasWf from "../../config";
-import { getDateDiff, getDateDMM, momentFromToday } from "../../helpers";
+import { getDateDiff, getDateDMM, getDateDMMYYYY, momentFromToday } from "../../helpers";
 import { getGrupoCanal, getImporteSolicitud, getLineaExpediente } from "../../helpers/workflowHelper";
 
 import styles from "./HoverHandler.module.css"
@@ -81,13 +81,19 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
     analista: data[0][analista],
     canal: data[0][canalSol] ?? data[0][canalSolAlt],
     sucursal: data[0][sucursalCol],
-    fechaIngreso: getDateDMM(data[0][fechaIngresoCol]),
-    fechaAsignado: getDateDMM(data[0][fechaAsignadoCol]),
+    fechaIngreso: getDateDMMYYYY(data[0][fechaIngresoCol]),
+    fechaIngresoShort: getDateDMM(data[0][fechaIngresoCol]),
+    fechaAsignado: getDateDMMYYYY(data[0][fechaAsignadoCol]),
+    fechaAsignadoShort: getDateDMM(data[0][fechaAsignadoCol]),
     isPendiente: data[0][faltaInfo],
-    fechaPendDesde: getDateDMM(data[0][faltaInfoDesde]),
-    fechaPendHasta: getDateDMM(data[0][faltaInfoHasta]),
-    fechaDevolucion: getDateDMM(data[0][fechaDevolucion]),
-    fechaFinalizado: getDateDMM(data[0][fechaFinalizadoAnalista]),
+    fechaPendDesde: getDateDMMYYYY(data[0][faltaInfoDesde]),
+    fechaPendDesdeShort: getDateDMM(data[0][faltaInfoDesde]),
+    fechaPendHasta: getDateDMMYYYY(data[0][faltaInfoHasta]),
+    fechaPendHastaShort: getDateDMM(data[0][faltaInfoHasta]),
+    fechaDevolucion: getDateDMMYYYY(data[0][fechaDevolucion]),
+    fechaDevolucionShort: getDateDMM(data[0][fechaDevolucion]),
+    fechaFinalizado: getDateDMMYYYY(data[0][fechaFinalizadoAnalista]),
+    fechaFinalizadoShort: getDateDMM(data[0][fechaFinalizadoAnalista]),
     canalDeGR: data[0][canalGr],
     rvPotencial: data[0][rvPotencial]
   }
@@ -101,7 +107,7 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
     devuelto: momentFromToday(sol.fechaDevolucion),
     finalizado: momentFromToday(sol.fechaFinalizado),
 
-    diffPendiente: getDateDiff(sol.fechaPendHasta, sol.fechaPendDesde, "D/MM"),
+    diffPendiente: getDateDiff(sol.fechaPendHasta, sol.fechaPendDesde, "DD/MM/YYYY"),
   }
 
   return (
@@ -115,11 +121,11 @@ const DataTransformer: React.FC<{ data: Expediente[] }> = ({ data }) => {
         {sol.fechaIngreso && <>
           <hr />
           <p>Ingreso a GR {sol.fechaIngreso} ({dayCount.ingreso !== 0 ? (dayCount.ingreso + "d") : "Hoy"}) </p>
-          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignado} ({dayCount.asignado !== 0 ? (dayCount.asignado + "d") : "Hoy"}) </p>}
-          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesde} ({dayCount.pendiente !== 0 ? (dayCount.pendiente + "d") : "Hoy"}) </p>}
+          {sol.fechaAsignado && <p>Asignado {sol.fechaAsignadoShort} ({dayCount.asignado !== 0 ? (dayCount.asignado + "d") : "Hoy"}) </p>}
+          {sol.isPendiente && <p>Pendiente desde {sol.fechaPendDesdeShort} ({dayCount.pendiente !== 0 ? (dayCount.pendiente + "d") : "Hoy"}) </p>}
           {!sol.isPendiente && dayCount.diffPendiente !== null && <p>Pendiente entre {sol.fechaPendDesde} y {sol.fechaPendHasta} ({dayCount.diffPendiente! + 1}d)</p>}
-          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucion} ({dayCount.devuelto !== 0 ? (dayCount.devuelto + "d") : "Hoy"}) </p>}
-          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizado} ({dayCount.finalizado !== 0 ? (dayCount.finalizado + "d") : "Hoy"}) </p>}
+          {sol.fechaDevolucion && <p>Devuelto {sol.fechaDevolucionShort} ({dayCount.devuelto !== 0 ? (dayCount.devuelto + "d") : "Hoy"}) </p>}
+          {sol.fechaFinalizado && <p>Finalizado {sol.fechaFinalizadoShort} ({dayCount.finalizado !== 0 ? (dayCount.finalizado + "d") : "Hoy"}) </p>}
         </>}
         <hr />
       </div>

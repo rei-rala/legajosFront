@@ -130,3 +130,18 @@ export function getDateDMM(date: Moment | Date | string | null, inputFormatDate:
 
   return inputDate.format("D/MM")
 }
+
+export function getDateDMMYYYY(date: Moment | Date | string | null, inputFormatDate: string = "DD/MM/YYYY") {
+  if (!date) {
+    return null
+  }
+  let inputDate = typeof date === "string" ? moment(date, inputFormatDate) : moment(date)
+
+  return inputDate.format("D/MM/YYYY")
+}
+
+const yearWithSlash: RegExp = /\/(\d{4})$/
+
+export function yearRemover() {
+  return "".replace(yearWithSlash, "")
+}
