@@ -3,12 +3,14 @@
   --color-primary-light: hsl(198, 77%, 92%);
   --color-primary-dark: hsl(198, 100%, 39%);
 
-  --sectionMaxWidth: 1500px;
+  --sectionMaxWidth: 1400px;
 }
 
+/*
 :root .ignoreSectionMaxWidth {
-  --sectionMaxWidth: 100%;
-}
+   --sectionMaxWidth: 100%; 
+  }
+*/
 
 html,
 body {
