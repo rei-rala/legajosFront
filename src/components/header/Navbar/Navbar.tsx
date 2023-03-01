@@ -3,29 +3,35 @@ import { NavLink } from 'react-router-dom';
 
 import styles from './Navbar.module.css';
 
+const links = [
+  {
+    to: '/workflow',
+    text: 'Workflow'
+  },
+  {
+    to: '/workflow/analistas',
+    text: 'Analistas'
+  },
+  {
+    to: '/workflow/tablas',
+    text: 'Workflow'
+  },
+
+]
 
 const Navbar: React.FC = () => {
   return (
-    <nav style={{height: '100%'}}>
+    <nav style={{ height: '100%' }}>
       <ul className={styles.navList}>
-        <li>
-          <NavLink to="/workflow" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
-            Workflow
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink to="/workflow/analistas" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
-            Analistas
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink to="/workflow/tablas/" className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
-            Tablas
-          </NavLink>
-        </li>
-
+        {
+          links.map(l => (
+            <li key={l.to}>
+              <NavLink to={l.to} className={navData => styles.navLink + " " + (navData.isActive ? styles.active : "")} end>
+                {l.text}
+              </NavLink>
+            </li>
+          ))
+        }
       </ul>
     </nav>
   );
